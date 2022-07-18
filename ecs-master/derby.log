@@ -1,0 +1,16 @@
+----------------------------------------------------------------
+Mon Jul 18 21:36:46 CEST 2022:
+Booting Derby (version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579)) instance a816c00e-0182-12d0-20e9-000006d2fed0 
+on database directory classpath:SIS_DATA/Databases/SpatialMetadata in READ ONLY mode with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@16b98e56. 
+Loaded from file:/C:/Users/USER/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar.
+java.vendor=Microsoft
+java.runtime.version=17.0.2+8-LTS
+user.dir=D:\ecs-master
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Mon Jul 18 21:36:56 CEST 2022:
+Shutting down instance a816c00e-0182-12d0-20e9-000006d2fed0 on database directory classpath:SIS_DATA/Databases/SpatialMetadata with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@16b98e56 
