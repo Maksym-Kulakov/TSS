@@ -130,22 +130,7 @@ public class ChartViewer implements ChartContext {
 		mapViewer.updateUI();
 	}
 
-	//myShipsAis
-	
-	 
-//	private void initShips() {
-//		ships.add(new MyShipsAis("Test 001", new GeoPosition(51.470187914814495, 7.217131991814141)));
-//		WaypointPainter<MyShipsAis> wp = new MyShipsReader();
-//		wp.setWaypoints(ships);
-//		mapViewer.setOverlayPainter(wp);
-//		for (MyShipsAis x : ships) {
-//			mapViewer.add(x.getButton());
-//		}
-//	}
-	
-	//myShipsAis
-	
-	
+
 	/**
 	 * removes the given WaypointPainter from WaypointPainters List
 	 * 
@@ -180,11 +165,14 @@ public class ChartViewer implements ChartContext {
 	
 	//new
 	
-	public WaypointPainter<Waypoint> addPointPainter(double shiplat, double shiplong) {
+	public WaypointPainter<Waypoint> addPointPainter(int mmsi, double shiplat, double shiplong) {
 		GeoPosition geoPosition = new GeoPosition(shiplat, shiplong);
 		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
 		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
 		waypointPainter.setWaypoints(waypoints);
+
+		List<Integer> mmsilist = new ArrayList<>();
+		mmsilist.add(mmsi);
 
 		paintersList.add(waypointPainter);
 		painter = new CompoundPainter<JXMapViewer>(paintersList);

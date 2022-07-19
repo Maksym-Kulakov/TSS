@@ -24,6 +24,7 @@ public class TimeClient implements Runnable {
 
 	double shiplat;
 	double shiplong;
+	int mmsi;
 	
 	
 	
@@ -75,6 +76,7 @@ public class TimeClient implements Runnable {
 						
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
+						mmsi = AISMSG1.getUserId();
 						
 					 
 						

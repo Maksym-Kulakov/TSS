@@ -23,9 +23,9 @@ public class Application {
 			chartViewer.show();
 			
 			while (true) {
-			chartViewer.addPointPainter(aisServerClient.shiplat, aisServerClient.shiplong);	
+			chartViewer.addPointPainter(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
 			}
-			
+
  // 		chartViewer.addSeachart(s57map);
 
 		} catch (Exception e) {
