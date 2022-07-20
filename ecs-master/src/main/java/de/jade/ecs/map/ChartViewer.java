@@ -161,7 +161,7 @@ public class ChartViewer implements ChartContext {
 		return waypointPainter;
 	}
 
-	
+		List<Integer> mmsilist = new ArrayList<>();
 	
 	//new
 	
@@ -171,8 +171,9 @@ public class ChartViewer implements ChartContext {
 		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
 		waypointPainter.setWaypoints(waypoints);
 
-		List<Integer> mmsilist = new ArrayList<>();
-		mmsilist.add(mmsi);
+
+//		mmsilist.add(mmsi);
+//		System.out.println(mmsi);
 
 		paintersList.add(waypointPainter);
 		painter = new CompoundPainter<JXMapViewer>(paintersList);
@@ -182,8 +183,35 @@ public class ChartViewer implements ChartContext {
 		return waypointPainter;
 	}
 	 
-	//new
-	
+	//new2
+
+
+	public WaypointPainter<Waypoint> addTimePainter(int mmsi, double shiplat, double shiplong) {
+		GeoPosition geoPosition = new GeoPosition(shiplat, shiplong);
+		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
+		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+		waypointPainter.setWaypoints(waypoints);
+
+
+//		mmsilist.add(mmsi);
+//		System.out.println(mmsi);
+
+		paintersList.add(waypointPainter);
+		painter = new CompoundPainter<JXMapViewer>(paintersList);
+		mapViewer.setOverlayPainter(painter);
+		mapViewer.updateUI();
+
+		paintersList.remove(painter);
+		painter = new CompoundPainter<JXMapViewer>(paintersList);
+		mapViewer.setOverlayPainter(painter);
+		mapViewer.updateUI();
+
+		return waypointPainter;
+	}
+
+	//new2
+
+
 	/**
 	 * removes the given Linepainter from the paintersList
 	 * 
