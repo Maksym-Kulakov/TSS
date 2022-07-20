@@ -18,7 +18,7 @@ public class Application {
 			FileInputStream in = new FileInputStream("D:\\U37IL137\\U37IL137.000");
 			S57map s57map = new S57map(true);
 			S57dec.decodeChart(in, s57map);
-//			ArrayList<Feature> list = s57map.features.get(Obj.SOUNDG);
+
 			ChartViewer chartViewer = new ChartViewer();
 			chartViewer.show();
 			
@@ -26,7 +26,7 @@ public class Application {
 			chartViewer.addPointPainter(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
 			}
 
- // 		chartViewer.addSeachart(s57map);
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

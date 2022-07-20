@@ -25,15 +25,6 @@ public class TimeClient implements Runnable {
 	double shiplat;
 	double shiplong;
 	int mmsi;
-	
-	
-	
-	
-	public static void main(String[] args) {
-		ExecutorService executor = Executors.newFixedThreadPool(10);
-		TimeClient aisServerClient = new TimeClient();
-		executor.execute(aisServerClient);
-	}
 
 	@Override
 	public void run() {
@@ -48,7 +39,7 @@ public class TimeClient implements Runnable {
 			int character;
 			StringBuilder data = new StringBuilder();
 
-//            
+//
 //            char[] buf = new char[1];
 //            reader.read(buf);
 			while (true) {
@@ -77,10 +68,7 @@ public class TimeClient implements Runnable {
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
 						mmsi = AISMSG1.getUserId();
-						
-					 
-						
-						
+
 					}
 				} catch (SentenceException e) {
 					e.printStackTrace();
@@ -89,7 +77,7 @@ public class TimeClient implements Runnable {
 				} catch (SixbitException e) {
 					e.printStackTrace();
 				}
-				
+
 				data = new StringBuilder();
 			}
 
