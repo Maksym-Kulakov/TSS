@@ -165,15 +165,10 @@ public class ChartViewer implements ChartContext {
 	
 	//new
 	
-	public WaypointPainter<Waypoint> addPointPainter(int mmsi, double shiplat, double shiplong) {
-		GeoPosition geoPosition = new GeoPosition(shiplat, shiplong);
+	public WaypointPainter<Waypoint> addPointPainter(GeoPosition geoPosition) {
 		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
 		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
 		waypointPainter.setWaypoints(waypoints);
-
-
-//		mmsilist.add(mmsi);
-//		System.out.println(mmsi);
 
 		paintersList.add(waypointPainter);
 		painter = new CompoundPainter<JXMapViewer>(paintersList);
@@ -186,7 +181,7 @@ public class ChartViewer implements ChartContext {
 	//new2
 
 
-	public WaypointPainter<Waypoint> addTimePainter(int mmsi, double shiplat, double shiplong) {
+	public WaypointPainter<Waypoint> addTimePainter(double shiplat, double shiplong) {
 		GeoPosition geoPosition = new GeoPosition(shiplat, shiplong);
 		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
 		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
@@ -202,8 +197,9 @@ public class ChartViewer implements ChartContext {
 		mapViewer.updateUI();
 
 		paintersList.remove(painter);
-		painter = new CompoundPainter<JXMapViewer>(paintersList);
-		mapViewer.setOverlayPainter(painter);
+	//	painter = new CompoundPainter<JXMapViewer>(paintersList);
+	//	mapViewer.setOverlayPainter(painter);
+	//	painter = null;
 		mapViewer.updateUI();
 
 		return waypointPainter;

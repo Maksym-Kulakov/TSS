@@ -1,16 +1,23 @@
 package de.jade.ecs.map;
 
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import com.sun.jdi.IntegerType;
+import org.apache.commons.collections4.MultiMap;
 import s57.S57dec;
 import s57.S57map;
+
+import javax.xml.crypto.Data;
 
 public class Application {
 	public static void main(String[] args) {
 
-		ExecutorService executor = Executors.newFixedThreadPool(10);
+		ExecutorService executor = Executors.newFixedThreadPool(100);
 		TimeClient aisServerClient = new TimeClient();
 		executor.execute(aisServerClient);
 		
@@ -21,23 +28,13 @@ public class Application {
 //			ArrayList<Feature> list = s57map.features.get(Obj.SOUNDG);
 			ChartViewer chartViewer = new ChartViewer();
 			chartViewer.show();
-			
 			while (true) {
-			chartViewer.addPointPainter(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
+				ShipAis shipAis = new ShipAis(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
+		 		ShipAis.addShipsOnMap(ShipAis.shipsAisHashMap);
 			}
-
- // 		chartViewer.addSeachart(s57map);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-
-// AIS input
-		
-		
-		
-		
-		
 	}
 }
