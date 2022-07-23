@@ -50,8 +50,7 @@ import symbols.Symbols;
 public class ChartViewer implements ChartContext {
 
 	private JXMapViewer mapViewer;
-	private JXMapViewer mymapViewer;
-	private ArrayList<Painter<JXMapViewer>> paintersList;
+	public ArrayList<Painter<JXMapViewer>> paintersList;
 	private CompoundPainter<JXMapViewer> painter;
 	private MyClass myline;
 	private final Set<MyShipsAis> ships;
@@ -67,7 +66,6 @@ public class ChartViewer implements ChartContext {
 	 */
 	public ChartViewer() {
 		mapViewer = new JXMapViewer();
-		mymapViewer = new JXMapViewer();
 		ships = new HashSet<>();
 		myline = new MyClass();
 		
