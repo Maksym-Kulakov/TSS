@@ -16,6 +16,9 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
 
+import de.jade.ecs.map.shipchart.DefaultShip;
+import de.jade.ecs.map.shipchart.ShipInter;
+import de.jade.ecs.map.shipchart.ShipPainter;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
@@ -29,8 +32,7 @@ import org.jxmapviewer.viewer.wms.WMSTileFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
-import de.jade.ecs.map.shipchart.MyShipsAis;
-import de.jade.ecs.map.shipchart.MyShipsReader;
+
 import de.jade.ecs.util.WMSServiceImagePNG;
 import render.ChartContext;
 import s57.S57map;
@@ -51,9 +53,9 @@ public class ChartViewer implements ChartContext {
 
 	private JXMapViewer mapViewer;
 	public ArrayList<Painter<JXMapViewer>> paintersList;
+	public ArrayList<Painter<JXMapViewer>> shipsList;
 	private CompoundPainter<JXMapViewer> painter;
 	private MyClass myline;
-	private final Set<MyShipsAis> ships;
 
 	private JFrame jFrame = null;
 
@@ -66,8 +68,7 @@ public class ChartViewer implements ChartContext {
 	 */
 	public ChartViewer() {
 		mapViewer = new JXMapViewer();
-		ships = new HashSet<>();
-		myline = new MyClass();
+
 		
 		// https://seamlessrnc.nauticalcharts.noaa.gov/arcgis/rest/services/encdirect
 //		WMSService wms = new WMSService("https://seamlessrnc.nauticalcharts.noaa.gov/arcgis/services/RNC/NOAA_RNC/MapServer/WmsServer?", "1");//"OSM-WMS");
@@ -90,6 +91,7 @@ public class ChartViewer implements ChartContext {
 		GeoPosition nordsee = new GeoPosition(54, 8);
 
 		paintersList = new ArrayList<Painter<JXMapViewer>>();
+		shipsList = new ArrayList<Painter<JXMapViewer>>();
 
 		mapViewer.setZoom(8);
 		mapViewer.setAddressLocation(nordsee);
@@ -106,13 +108,10 @@ public class ChartViewer implements ChartContext {
 		// Display the viewer in a JFrame
 		if (jFrame == null) {
 			jFrame = new JFrame("ChartViewer");
-			jFrame.getContentPane().add(myline);
 			jFrame.getContentPane().add(mapViewer);
 			jFrame.setSize(1000, 800);
 			jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			jFrame.setVisible(true);
-		 
-			
 		} else {
 			if (!jFrame.isVisible()) {
 				jFrame.setVisible(true);
@@ -159,11 +158,37 @@ public class ChartViewer implements ChartContext {
 		return waypointPainter;
 	}
 
-		List<Integer> mmsilist = new ArrayList<>();
+// ShipPainter
+	public ShipPainter<ShipInter> addShipPainter(GeoPosition geoPosition) {
+		Set<ShipInter> ships = new HashSet<ShipInter>(Arrays.asList(new DefaultShip(geoPosition)));
+		ShipPainter<ShipInter> shipPainter = new ShipPainter<ShipInter>();
+		shipPainter.setShips(ships);
+
+		shipsList.add(shipPainter);
+		painter = new CompoundPainter<JXMapViewer>(shipsList);
+		mapViewer.setOverlayPainter(painter);
+		mapViewer.updateUI();
+
+		return shipPainter;
+	}
 	
 	//new
 	
 	public WaypointPainter<Waypoint> addPointPainter(GeoPosition geoPosition) {
+		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
+		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+		waypointPainter.setWaypoints(waypoints);
+
+		paintersList.add(waypointPainter);
+		painter = new CompoundPainter<JXMapViewer>(paintersList);
+		mapViewer.setOverlayPainter(painter);
+		mapViewer.updateUI();
+
+		return waypointPainter;
+	}
+
+
+	public WaypointPainter<Waypoint> addShipsPainter(GeoPosition geoPosition) {
 		Set<Waypoint> waypoints = new HashSet<Waypoint>(Arrays.asList(new DefaultWaypoint(geoPosition)));
 		WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
 		waypointPainter.setWaypoints(waypoints);

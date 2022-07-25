@@ -35,7 +35,7 @@ public class Application {
 			while (true) {
 				ShipAis shipAis = new ShipAis(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
 				shipAisObject.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
-				//		System.out.println(ShipAis.shipsAisHashMap.get(257796000)); to check that Map updates
+				System.out.println(ShipAis.shipsAisHashMap.get(211141000)); //to check that Map updates
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

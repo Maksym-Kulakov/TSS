@@ -53,17 +53,17 @@ public class TimeClient implements Runnable {
 				character = reader.read();
 				data.append((char) character);
 
-				System.out.println(data);
+//				System.out.println(data);
 				Vdm vdm = new Vdm();
 				try {
 					vdm.parse(data.toString());
 					AisMessage msg = AisMessage.getInstance(vdm);
 					
 					if(msg instanceof AisMessage1) {
-						System.out.println(msg.toString());
+//						System.out.println(msg.toString());
 						AisMessage1 AISMSG1 = (AisMessage1) msg;
 						
-						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
+//						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
 						
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();

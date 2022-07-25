@@ -35,7 +35,7 @@ public class ShipAis {
 
     public void addShipsOnMap(ChartViewer chartViewerObj, HashMap<Integer, ShipAis> values) {
         for (Entry<Integer, ShipAis> value : values.entrySet()) {
-            chartViewerObj.addPointPainter(new GeoPosition(value.getValue().latitude, value.getValue().longitude));
+            chartViewerObj.addShipPainter(new GeoPosition(value.getValue().latitude, value.getValue().longitude));
         }
     }
 }
