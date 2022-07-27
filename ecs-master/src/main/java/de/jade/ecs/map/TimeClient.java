@@ -25,6 +25,11 @@ public class TimeClient implements Runnable {
 	double shiplat;
 	double shiplong;
 	int mmsi;
+	ChartViewer chartViewer;
+
+	public TimeClient(ChartViewer chartViewer) {
+		this.chartViewer = chartViewer;
+	}
 
 	@Override
 	public void run() {
@@ -63,11 +68,14 @@ public class TimeClient implements Runnable {
 //						System.out.println(msg.toString());
 						AisMessage1 AISMSG1 = (AisMessage1) msg;
 						
-//						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
+						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
 						
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
 						mmsi = AISMSG1.getUserId();
+
+						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong);
+//						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
 					}
 				} catch (SentenceException e) {

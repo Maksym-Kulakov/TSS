@@ -19,24 +19,25 @@ import javax.xml.crypto.Data;
 public class Application {
 	public static void main(String[] args) {
 
-		ExecutorService executor = Executors.newFixedThreadPool(10);
-		TimeClient aisServerClient = new TimeClient();
-		executor.execute(aisServerClient);
+
 
 		try {
-			FileInputStream in = new FileInputStream("D:\\U37IL137\\U37IL137.000");
-			S57map s57map = new S57map(true);
-			S57dec.decodeChart(in, s57map);
+		//	FileInputStream in = new FileInputStream("D:\\U37IL137\\U37IL137.000");
+//			S57map s57map = new S57map(true);
+//			S57dec.decodeChart(in, s57map);
 //			ArrayList<Feature> list = s57map.features.get(Obj.SOUNDG);
 			ShipAis shipAisObject = new ShipAis();
 			ChartViewer chartViewer = new ChartViewer();
 			chartViewer.show();
+			ExecutorService executor = Executors.newFixedThreadPool(10);
+			TimeClient aisServerClient = new TimeClient(chartViewer);
+			executor.execute(aisServerClient);
 
-			while (true) {
-				ShipAis shipAis = new ShipAis(aisServerClient.mmsi, aisServerClient.shiplat, aisServerClient.shiplong);
-				shipAisObject.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
-				System.out.println(ShipAis.shipsAisHashMap.get(211141000)); //to check that Map updates
+			while(true){
+				chartViewer.getJXMapViewer().updateUI();
+				Thread.sleep(1000l);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

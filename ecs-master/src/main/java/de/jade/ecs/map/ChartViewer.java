@@ -102,6 +102,8 @@ public class ChartViewer implements ChartContext {
 		mapViewer.addMouseMotionListener(mia);
 		mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
 
+		addShipPainter();
+
 	}
 
 	public void show() {
@@ -140,7 +142,7 @@ public class ChartViewer implements ChartContext {
 	/**
 	 * adds a new WaypointPainter with the given Point to the WaypointPainters List
 	 * for other geometries use a LinePainter
-	 * 
+	 *
 	 * @param point
 	 * @return
 	 */
@@ -159,10 +161,10 @@ public class ChartViewer implements ChartContext {
 	}
 
 // ShipPainter
-	public ShipPainter<ShipInter> addShipPainter(GeoPosition geoPosition) {
-		Set<ShipInter> ships = new HashSet<ShipInter>(Arrays.asList(new DefaultShip(geoPosition)));
+	public ShipPainter<ShipInter> addShipPainter() {
+//		Set<ShipInter> ships = new HashSet<ShipInter>(Arrays.asList(new DefaultShip(geoPosition)));
 		ShipPainter<ShipInter> shipPainter = new ShipPainter<ShipInter>();
-		shipPainter.setShips(ships);
+	//	shipPainter.setShips(ships);
 
 		shipsList.add(shipPainter);
 		painter = new CompoundPainter<JXMapViewer>(shipsList);
