@@ -14,6 +14,7 @@ public class ShipAis implements ShipInter {
     int mmsiNum;
     double latitude;
     double longitude;
+    double cog;
     public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
     GeoPosition geoPosition;
 
@@ -22,7 +23,8 @@ public class ShipAis implements ShipInter {
     public ShipAis() {
     }
 
-    public ShipAis(int mmsiNum, double latitude, double longitude) {
+    public ShipAis(int mmsiNum, double latitude, double longitude, double cog) {
+        this.cog = cog;
         this.mmsiNum = mmsiNum;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -46,6 +48,11 @@ public class ShipAis implements ShipInter {
     @Override
     public GeoPosition getPosition() {
         return geoPosition;
+    }
+
+    @Override
+    public Double getCog() {
+        return cog;
     }
 }
 

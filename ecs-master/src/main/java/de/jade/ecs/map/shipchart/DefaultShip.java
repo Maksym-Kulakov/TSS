@@ -5,6 +5,8 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 public class DefaultShip extends AbstractBean implements ShipInter {
     private GeoPosition position;
+    private Double cog;
+
 
     public DefaultShip()
     {
@@ -24,6 +26,10 @@ public class DefaultShip extends AbstractBean implements ShipInter {
     @Override
     public GeoPosition getPosition() {
         return position;
+    }
+
+    public Double getCog() {
+        return cog;
     }
 
     public void setPosition(GeoPosition coordinate)
