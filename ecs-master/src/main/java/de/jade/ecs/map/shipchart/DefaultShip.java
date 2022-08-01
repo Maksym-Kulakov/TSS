@@ -7,7 +7,6 @@ public class DefaultShip extends AbstractBean implements ShipInter {
     private GeoPosition position;
     private Double cog;
 
-
     public DefaultShip()
     {
         this(new GeoPosition(0, 0));

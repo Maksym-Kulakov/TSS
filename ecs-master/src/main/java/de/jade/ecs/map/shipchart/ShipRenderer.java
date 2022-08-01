@@ -5,5 +5,5 @@ import org.jxmapviewer.JXMapViewer;
 import java.awt.*;
 // S - ship type
 public interface ShipRenderer<S> {
-    public void paintShip(Graphics2D g, JXMapViewer map, S ShipInter);
+    void paintShip(Graphics2D g, JXMapViewer map, S ShipInter);
 }

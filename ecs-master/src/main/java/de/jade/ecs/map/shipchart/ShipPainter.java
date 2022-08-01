@@ -35,12 +35,6 @@ public class ShipPainter<S extends ShipInter> extends AbstractPainter<JXMapViewe
         return Collections.unmodifiableSet(ships);
     }
 
-//    public void setShips(Set<? extends S> ships)
-//    {
-//        this.ships.clear();
-//        this.ships.addAll(ships);
-//    }
-
     @Override
     protected void doPaint(Graphics2D g, JXMapViewer map, int width, int height)
     {
@@ -57,5 +51,4 @@ public class ShipPainter<S extends ShipInter> extends AbstractPainter<JXMapViewe
         }
         g.translate(viewportBounds.getX(), viewportBounds.getY());
     }
-
 }
