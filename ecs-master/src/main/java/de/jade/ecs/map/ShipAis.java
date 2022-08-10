@@ -1,17 +1,14 @@
 package de.jade.ecs.map;
 
 import de.jade.ecs.map.shipchart.ShipInter;
-import org.jxmapviewer.JXMapViewer;
-import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.GeoPosition;
 
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class ShipAis implements ShipInter {
-    int mmsiNum;
+    Integer mmsiNum;
     double latitude;
     double longitude;
     double cog;
@@ -33,9 +30,9 @@ public class ShipAis implements ShipInter {
     }
 
     public void addShipToAisHashMap(ShipAis ship) {
-        if (shipsAisHashMap.containsKey(ship.mmsiNum)) {
-            shipsAisHashMap.replace(ship.mmsiNum, shipsAisHashMap.get(mmsiNum), ship);
-        }
+//        if (shipsAisHashMap.containsKey(ship.mmsiNum)) {
+//            shipsAisHashMap.replace(ship.mmsiNum, shipsAisHashMap.get(mmsiNum), ship);
+//        }
         shipsAisHashMap.put(ship.mmsiNum, ship);
     }
 
@@ -53,6 +50,11 @@ public class ShipAis implements ShipInter {
     @Override
     public Double getCog() {
         return cog;
+    }
+
+    @Override
+    public Integer getMmsi() {
+        return mmsiNum;
     }
 }
 
