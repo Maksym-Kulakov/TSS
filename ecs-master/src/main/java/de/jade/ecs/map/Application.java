@@ -36,6 +36,8 @@ public class Application {
 			while(true){
 				chartViewer.getJXMapViewer().updateUI();
 				Thread.sleep(1000l);
+				ShipAis.shipsInsideAreaAisHashMap.values().stream()
+						.map(ShipAis::getMmsi).forEach(System.out::println);
 			}
 
 		} catch (Exception e) {

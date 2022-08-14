@@ -42,7 +42,10 @@ public class ShipAis implements ShipInter {
 
     public void addShipsInsideAreaAisHashMap(ShipAis ship) {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
-        if (BoundaryArea.insideArea(geoPoint, TssArea.polygon)) {
+        if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
+            shipsInsideAreaAisHashMap.put(ship.mmsiNum, ship);
+        }
+        if (BoundaryArea.insideArea(geoPoint, TssArea.inWeser)) {
             shipsInsideAreaAisHashMap.put(ship.mmsiNum, ship);
         }
     }
