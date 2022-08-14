@@ -4,10 +4,9 @@ import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.TssArea;
 import org.jxmapviewer.viewer.GeoPosition;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.Map.Entry;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class ShipAis implements ShipInter {
     Integer mmsiNum;
@@ -17,7 +16,7 @@ public class ShipAis implements ShipInter {
     public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
     GeoPosition geoPosition;
     public static HashMap<Integer, ShipAis> shipsInsideAreaAisHashMap = new HashMap<>();
-
+//    public static DynamicData data = new DynamicData("Ship Ais");
 
 
     public ShipAis() {
@@ -47,6 +46,10 @@ public class ShipAis implements ShipInter {
         }
         if (BoundaryArea.insideArea(geoPoint, TssArea.inWeser)) {
             shipsInsideAreaAisHashMap.put(ship.mmsiNum, ship);
+//            data.setLastValue(ship.getCog());
+//            data.pack();
+//            UIUtils.centerFrameOnScreen(data);
+//            data.setVisible(true);
         }
     }
 
