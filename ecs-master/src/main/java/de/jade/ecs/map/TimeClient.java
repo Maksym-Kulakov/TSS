@@ -1,10 +1,5 @@
 package de.jade.ecs.map;
 
-import java.net.*;
-import java.nio.CharBuffer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import dk.dma.ais.binary.SixbitException;
 import dk.dma.ais.message.AisMessage;
 import dk.dma.ais.message.AisMessage1;
@@ -12,7 +7,11 @@ import dk.dma.ais.message.AisMessageException;
 import dk.dma.ais.sentence.SentenceException;
 import dk.dma.ais.sentence.Vdm;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * This program is a socket client application that connects to a time server to
@@ -75,7 +74,7 @@ public class TimeClient implements Runnable {
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
 						mmsi = AISMSG1.getUserId();
 						cog = AISMSG1.getCog() / 10.0;
-//						System.out.println(cog);
+ 						System.out.println(cog);
 
 						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, cog);
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);

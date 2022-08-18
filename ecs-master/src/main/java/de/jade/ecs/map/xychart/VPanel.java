@@ -32,8 +32,7 @@ public class VPanel
     {
         maxAge=age;
     }
-    public void GUI()
-    {
+    public void GUI() {
         this.Vx = new XYSeries("Vx");
         this.Vy = new XYSeries("Vy");
         this.Vz = new XYSeries("Vz");
@@ -52,7 +51,7 @@ public class VPanel
         domain.setNumberFormatOverride(nf);
         //domain.setStandardTickUnits(domain.createIntegerTickUnits());
         domain.setAutoRange(true);
-        
+
         domain.setFixedAutoRange(maxAge/1000);
         domain.setLowerMargin(0.0);
         domain.setUpperMargin(0.0);

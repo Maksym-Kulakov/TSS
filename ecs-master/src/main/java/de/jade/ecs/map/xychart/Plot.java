@@ -18,8 +18,7 @@ public class Plot extends JPanel {
     int maxAge;
     JTabbedPane tabbedPane;
 
-    public Plot(int maxage)
-    {
+    public Plot(int maxage) {
         super(new GridLayout(1,1));
         frame = new JFrame("Roll Pitch Heading");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,8 +33,7 @@ public class Plot extends JPanel {
         maxAge=maxage;
 
     }
-    public void createGUI(int maxAge)
-    {
+    public void createGUI(int maxAge) {
         tabbedPane = new JTabbedPane();
         
         
@@ -58,23 +56,20 @@ class DataGenerator extends Timer implements ActionListener
             super(interval, null);
             addActionListener(this);
         }
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             try
             {
-
                    t=t+0.05;
                    
                    diff=java.util.Calendar.getInstance().getTimeInMillis()-initial_time;
 
                    vpanel.Vx.add(diff/1000,Math.sin(t));
-                   vpanel.Vy.add(diff/1000,Math.cos(t));
+                   vpanel.Vy.add(diff/1000, 1);
                    vpanel.Vz.add(diff/1000,Math.sin(t-Math.PI/4));
         } catch (Exception ex) {System.out.println("1 "+ex);}
         }
     }
- public static void main(String[] args)
-    {
+ public static void main(String[] args) {
         try
         {
             Plot panel = new Plot(5);
