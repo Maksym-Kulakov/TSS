@@ -28,7 +28,7 @@ public class DefaultShip extends AbstractBean implements ShipInter {
         return position;
     }
 
-    public Double getCog() {
+    public Double getHdg() {
         return cog;
     }
 

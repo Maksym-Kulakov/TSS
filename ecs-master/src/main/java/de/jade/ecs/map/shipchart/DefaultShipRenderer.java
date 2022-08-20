@@ -20,7 +20,7 @@ public class DefaultShipRenderer implements ShipRenderer<ShipInter> {
 
     public static HashMap<Integer, Double> shipsCogHashMap = new HashMap<>();
     public static HashMap<Integer, BufferedImage> shipsImgHashMap = new HashMap<>();
-    public static HashMap<Double, BufferedImage> shipsCog2img = new HashMap<>();
+    public static HashMap<Double, BufferedImage> shipsHdgimg = new HashMap<>();
 
     public DefaultShipRenderer() {
         try {
@@ -28,7 +28,7 @@ public class DefaultShipRenderer implements ShipRenderer<ShipInter> {
             imgnew = img;
 
             for(float i = 0.0f; i<=3600f; i+=1.0){
-                shipsCog2img.put((double)i/10, ShipImage.rotateImage(img, i/10));
+                shipsHdgimg.put((double)i/10, ShipImage.rotateImage(img, i/10));
             }
         } catch (Exception ex) {
             log.warn("couldn't read standard_waypoint.png", ex);
@@ -43,9 +43,9 @@ public class DefaultShipRenderer implements ShipRenderer<ShipInter> {
             return;
 
         Point2D point = map.getTileFactory().geoToPixel(s.getPosition(), map.getZoom());
-        int x = (int) point.getX() - shipsCog2img.get(s.getCog()).getWidth() / 2;
-        int y = (int) point.getY() - shipsCog2img.get(s.getCog()).getHeight() / 2;
-        g.drawImage(shipsCog2img.get(s.getCog()), x, y, null);
+        int x = (int) point.getX() - shipsHdgimg.get(s.getHdg()).getWidth() / 2;
+        int y = (int) point.getY() - shipsHdgimg.get(s.getHdg()).getHeight() / 2;
+        g.drawImage(shipsHdgimg.get(s.getHdg()), x, y, null);
 //
 //        if (shipsCogHashMap.get(s.getMmsi()) == null || !s.getCog().equals(shipsCogHashMap.get(s.getMmsi()))) {
 //            int x = (int) point.getX() - imgnew.getWidth() / 2;

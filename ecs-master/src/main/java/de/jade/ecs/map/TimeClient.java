@@ -24,7 +24,8 @@ public class TimeClient implements Runnable {
 	double shiplat;
 	double shiplong;
 	int mmsi;
-	double cog;
+	double hdg;
+	double speed;
 	ChartViewer chartViewer;
 
 	public TimeClient(ChartViewer chartViewer) {
@@ -73,10 +74,12 @@ public class TimeClient implements Runnable {
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
 						mmsi = AISMSG1.getUserId();
-						cog = AISMSG1.getCog() / 10.0;
- 						System.out.println(cog);
+						hdg = AISMSG1.getCog() / 10.0;
+// 						System.out.println(hdg);
 
-						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, cog);
+						if (shiplat > 53.5 && shiplat < 55.0 && shiplong > 6.0 && shiplong < 8.5) {
+							ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed);
+						}
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
 					}

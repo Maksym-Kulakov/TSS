@@ -1,5 +1,6 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.riskassessment.TcpaCalculation;
 import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.TssArea;
 import org.jxmapviewer.viewer.GeoPosition;
@@ -12,44 +13,64 @@ public class ShipAis implements ShipInter {
     Integer mmsiNum;
     double latitude;
     double longitude;
-    double cog;
+    double hdg;
+    double speed;
     public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
     GeoPosition geoPosition;
-    public static HashMap<Integer, ShipAis> shipsInsideAreaAisHashMap = new HashMap<>();
-//    public static DynamicData data = new DynamicData("Ship Ais");
-
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToEastAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToSouthAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToNorthAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaInWeserAisHashMap = new HashMap<>();
+    //    public static DynamicData data = new DynamicData("Ship Ais");
+    TcpaCalculation tcpaCalculation = new TcpaCalculation();
 
     public ShipAis() {
     }
 
-    public ShipAis(int mmsiNum, double latitude, double longitude, double cog) {
-        this.cog = cog;
+    public ShipAis(int mmsiNum, double latitude, double longitude, double hdg, double speed) {
+        this.hdg = hdg;
         this.mmsiNum = mmsiNum;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.speed = speed;
         geoPosition = new GeoPosition(latitude, longitude);
         addShipToAisHashMap(this);
-        addShipsInsideAreaAisHashMap(this);
+        addShipsInsideAreaAisHashMapToEast(this);
+        addShipsInsideAreaAisHashMapToSouth(this);
+        addShipsInsideAreaAisHashMapToNorth(this);
+        addShipsInsideAreaAisHashMapInWeser(this);
+        tcpaCalculation.calculateTcpa();
     }
 
     public void addShipToAisHashMap(ShipAis ship) {
-//        if (shipsAisHashMap.containsKey(ship.mmsiNum)) {
-//            shipsAisHashMap.replace(ship.mmsiNum, shipsAisHashMap.get(mmsiNum), ship);
-//        }
         shipsAisHashMap.put(ship.mmsiNum, ship);
     }
 
-    public void addShipsInsideAreaAisHashMap(ShipAis ship) {
+    public void addShipsInsideAreaAisHashMapToEast(ShipAis ship) {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
-            shipsInsideAreaAisHashMap.put(ship.mmsiNum, ship);
+            shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
         }
+    }
+
+    public void addShipsInsideAreaAisHashMapToSouth(ShipAis ship) {
+        Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
+        if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToSouth)) {
+            shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
+        }
+    }
+
+    public void addShipsInsideAreaAisHashMapToNorth(ShipAis ship) {
+        Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
+        if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToNorth)) {
+            shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
+        }
+    }
+
+    public void addShipsInsideAreaAisHashMapInWeser(ShipAis ship) {
+        Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
         if (BoundaryArea.insideArea(geoPoint, TssArea.inWeser)) {
-            shipsInsideAreaAisHashMap.put(ship.mmsiNum, ship);
-//            data.setLastValue(ship.getCog());
-//            data.pack();
-//            UIUtils.centerFrameOnScreen(data);
-//            data.setVisible(true);
+            shipsInsideAreaInWeserAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
@@ -59,14 +80,18 @@ public class ShipAis implements ShipInter {
         }
     }
 
+    public double getSpeed() {
+        return speed;
+    }
+
     @Override
     public GeoPosition getPosition() {
         return geoPosition;
     }
 
     @Override
-    public Double getCog() {
-        return cog;
+    public Double getHdg() {
+        return hdg;
     }
 
     @Override

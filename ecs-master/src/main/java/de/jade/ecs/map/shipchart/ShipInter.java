@@ -4,6 +4,6 @@ import org.jxmapviewer.viewer.GeoPosition;
 
 public interface ShipInter {
     GeoPosition getPosition();
-    Double getCog();
+    Double getHdg();
     Integer getMmsi();
 }
