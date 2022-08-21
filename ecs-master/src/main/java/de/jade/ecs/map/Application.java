@@ -32,6 +32,8 @@ public class Application {
 			ExecutorService executor = Executors.newFixedThreadPool(10);
 			TimeClient aisServerClient = new TimeClient(chartViewer);
 			executor.execute(aisServerClient);
+			ApplicationCPA applicationCPA = new ApplicationCPA();
+			executor.execute(applicationCPA);
 
 			while(true){
 				chartViewer.getJXMapViewer().updateUI();
