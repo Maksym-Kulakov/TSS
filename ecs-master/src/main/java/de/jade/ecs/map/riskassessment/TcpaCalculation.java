@@ -3,25 +3,22 @@ package de.jade.ecs.map.riskassessment;
 import de.jade.ecs.map.ShipAis;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class TcpaCalculation {
-    public ShipAis shipA;
-    public ShipAis shipB;
+    public static HashMap<Integer, ShipAis> shipsGot = new HashMap<>();
 
     public ShipAis getShip(HashMap<Integer, ShipAis> shipAisHashMap) {
         if (!shipAisHashMap.values().isEmpty()) {
-            return shipAisHashMap.values().stream().findFirst().get();
+            for (Map.Entry<Integer, ShipAis> ship : shipAisHashMap.entrySet()) {
+                if (!shipsGot.containsKey(ship.getKey())) {
+                    shipsGot.put(ship.getKey(), ship.getValue());
+                    return ship.getValue();
+                }
+            }
+            shipsGot.clear();
+            getShip(shipAisHashMap);
         }
         return null;
-    }
-
-    public void calculateTcpa() {
-        ShipAis shipA = getShip(ShipAis.shipsInsideAreaToNorthAisHashMap);
-        ShipAis shipB = getShip(ShipAis.shipsInsideAreaInWeserAisHashMap);
-        if (shipA != null && shipB != null) {
-            System.out.println("SHIPS SPEEDS !!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println(shipA.getSpeed());
-            System.out.println(shipB.getSpeed());
-        }
     }
 }
