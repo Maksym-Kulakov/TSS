@@ -8,7 +8,7 @@ public class TcpaCalculation {
     public ShipAis shipA;
     public ShipAis shipB;
 
-    ShipAis getShip(HashMap<Integer, ShipAis> shipAisHashMap) {
+    public ShipAis getShip(HashMap<Integer, ShipAis> shipAisHashMap) {
         if (!shipAisHashMap.values().isEmpty()) {
             return shipAisHashMap.values().stream().findFirst().get();
         }

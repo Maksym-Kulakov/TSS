@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.sun.jdi.IntegerType;
+import de.jade.ecs.map.riskassessment.TcpaCalculation;
 import org.apache.commons.collections4.MultiMap;
 import org.jxmapviewer.viewer.GeoPosition;
 import s57.S57dec;
@@ -18,9 +19,6 @@ import javax.xml.crypto.Data;
 
 public class Application {
 	public static void main(String[] args) {
-
-
-
 		try {
 		//	FileInputStream in = new FileInputStream("D:\\U37IL137\\U37IL137.000");
 //			S57map s57map = new S57map(true);
@@ -29,10 +27,11 @@ public class Application {
 			ShipAis shipAisObject = new ShipAis();
 			ChartViewer chartViewer = new ChartViewer();
 			chartViewer.show();
-			ExecutorService executor = Executors.newFixedThreadPool(10);
+			ExecutorService executor = Executors.newFixedThreadPool(3);
 			TimeClient aisServerClient = new TimeClient(chartViewer);
 			executor.execute(aisServerClient);
-			ApplicationCPA applicationCPA = new ApplicationCPA();
+			TcpaCalculation tcpaCalculation = new TcpaCalculation();
+			ApplicationCPA applicationCPA = new ApplicationCPA(tcpaCalculation);
 			executor.execute(applicationCPA);
 
 			while(true){

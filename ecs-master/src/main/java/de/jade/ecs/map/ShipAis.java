@@ -39,7 +39,6 @@ public class ShipAis implements ShipInter {
         addShipsInsideAreaAisHashMapToSouth(this);
         addShipsInsideAreaAisHashMapToNorth(this);
         addShipsInsideAreaAisHashMapInWeser(this);
-        tcpaCalculation.calculateTcpa();
     }
 
     public void addShipToAisHashMap(ShipAis ship) {

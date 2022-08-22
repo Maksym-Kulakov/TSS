@@ -75,7 +75,8 @@ public class TimeClient implements Runnable {
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
 						mmsi = AISMSG1.getUserId();
 						hdg = AISMSG1.getCog() / 10.0;
-// 						System.out.println(hdg);
+						speed = AISMSG1.getSog() / 10.0;
+// 						System.out.println(speed);
 
 						if (shiplat > 53.5 && shiplat < 55.0 && shiplong > 6.0 && shiplong < 8.5) {
 							ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed);
