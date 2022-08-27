@@ -70,16 +70,15 @@ public class TimeClient implements Runnable {
 						AisMessage1 AISMSG1 = (AisMessage1) msg;
 						
 //						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
-						
+
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
 						shiplong = AISMSG1.getPos().getLongitudeDouble();
+						if (shiplat > 53.5 && shiplat < 55.0 && shiplong > 6.0 && shiplong < 8.5) {
 						mmsi = AISMSG1.getUserId();
 						hdg = AISMSG1.getCog() / 10.0;
 						speed = AISMSG1.getSog() / 10.0;
 // 						System.out.println(speed);
-
-						if (shiplat > 53.5 && shiplat < 55.0 && shiplong > 6.0 && shiplong < 8.5) {
-							ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed);
+						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed);
 						}
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
