@@ -10,19 +10,17 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class ShipAis implements ShipInter {
+    public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToEastAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToSouthAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaToNorthAisHashMap = new HashMap<>();
+    public static HashMap<Integer, ShipAis> shipsInsideAreaInWeserAisHashMap = new HashMap<>();
+    GeoPosition geoPosition;
     Integer mmsiNum;
     double latitude;
     double longitude;
     double hdg;
     double speed;
-    public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
-    GeoPosition geoPosition;
-    public static HashMap<Integer, ShipAis> shipsInsideAreaToEastAisHashMap = new HashMap<>();
-    public static HashMap<Integer, ShipAis> shipsInsideAreaToSouthAisHashMap = new HashMap<>();
-    public static HashMap<Integer, ShipAis> shipsInsideAreaToNorthAisHashMap = new HashMap<>();
-    public static HashMap<Integer, ShipAis> shipsInsideAreaInWeserAisHashMap = new HashMap<>();
-    //    public static DynamicData data = new DynamicData("Ship Ais");
-    TcpaCalculation tcpaCalculation = new TcpaCalculation();
 
     public ShipAis() {
     }

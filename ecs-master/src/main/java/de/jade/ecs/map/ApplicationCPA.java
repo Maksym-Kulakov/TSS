@@ -70,6 +70,7 @@ public class ApplicationCPA implements Runnable {
 
 		/** calculate TCPA **/
 		double cpaTime = Track.cpaTime(track1, track2);
+		double cpaTimeMin = cpaTime / 60;
 
 		System.out.print("TCPA: " + cpaTime + ", ");
 
@@ -98,6 +99,7 @@ public class ApplicationCPA implements Runnable {
 		geoCalc.setEndPoint(position2Future);
 		double cpaDistance = geoCalc.getGeodesicDistance();
 		double startingAzimuth = geoCalc.getStartingAzimuth();
+		double cpaDistanceNm = cpaDistance / 1852;
 
 		/** calc cpa center psn **/
 		geoCalc.setStartGeographicPoint(position1Future.getCoordinate()[0], position1Future.getCoordinate()[1]);
@@ -112,7 +114,9 @@ public class ApplicationCPA implements Runnable {
 
 		Integer key = new PairHash(shipAis.getMmsi(), shipAIS2.getMmsi()).hashCode();
 		ConflictShips conflictShips
-				= new ConflictShips(cpaDistance, cpaTime, cpaCenterPsn, shipAis, shipAIS2);
+				= new ConflictShips(cpaDistanceNm, cpaTimeMin, cpaCenterPsn, shipAis, shipAIS2);
 		shipsConflicts.put(key, conflictShips);
+
+		CrossAreaChart.getShipsConflictsInCrossAreaSouth();
 	}
 }
