@@ -13,6 +13,8 @@ public class Application {
 			executor.execute(aisServerClient);
 			ApplicationCPA applicationCPA = new ApplicationCPA();
 			executor.execute(applicationCPA);
+			CrossAreaChartDraw crossAreaChartDraw = new CrossAreaChartDraw("crossArea");
+			executor.execute(crossAreaChartDraw);
 
 			while(true){
 				chartViewer.getJXMapViewer().updateUI();
