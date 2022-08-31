@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class ApplicationCPA implements Runnable {
 	public static HashMap<Integer, ConflictShips> shipsConflicts = new HashMap<>();
-	GeodeticCalculator geoCalc = GeodeticCalculator.create(CommonCRS.WGS84.geographic());
+	public static GeodeticCalculator geoCalc = GeodeticCalculator.create(CommonCRS.WGS84.geographic());
 	int count;
 
 	@Override

@@ -12,6 +12,8 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +22,27 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
     private static final int N = 16;
     private static final String title = "South Cross Area";
     private XYSeries chartSouth = new XYSeries("Conflict Ships");
+    //horizontal axe
+    static final double x1 = 53.9045;
+    static final double y1 = 7.6515;
+    static final double x2 = 53.9208;
+    static final double y2 = 7.7681;
+    static final double xx = x2 - x1;
+    static final double yy = y2 - y1;
+    //vertical axe
+    static final double x1v = 53.95167;
+    static final double y1v = 7.615;
+    static final double x2v = 53.9045;
+    static final double y2v = 7.6515;
+    static final double xxv = x2v - x1v;
+    static final double yyv = y2v - y1v;
+
+
+
+//        Vector2D vectorLowerBorder = Vector2D.create(new CoordinateXY(53.89917, 7.616008),
+//                new CoordinateXY(53.9208, 7.7681));
+
+
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -65,12 +88,11 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
 
     private void update() {
         for (ConflictShips ships : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
-            double x = ships.cpaLocation.getCoordinate()[0];
-            double y = ships.cpaLocation.getCoordinate()[1];
-
-
-
-            chartSouth.add(new XYDataItem(0,0));
+            double x3 = ships.cpaLocation.getCoordinate()[0];
+            double y3 = ships.cpaLocation.getCoordinate()[1];
+            Double chartY = ((xx * (x3 - x1)) + (yy * (y3 - y1))) / ((xx * xx) + (yy * yy));
+            Double chartX = ((xxv * (x3 - x1v)) + (yyv * (y3 - y1v))) / ((xxv * xxv) + (yyv * yyv));
+            chartSouth.add(new XYDataItem(chartX,chartY));
         }
     }
 
