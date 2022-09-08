@@ -1,7 +1,6 @@
 package de.jade.ecs.map;
 
-import org.apache.sis.geometry.DirectPosition2D;
-import org.jxmapviewer.viewer.GeoPosition;
+
 import org.opengis.geometry.DirectPosition;
 
 import java.awt.geom.Point2D;
