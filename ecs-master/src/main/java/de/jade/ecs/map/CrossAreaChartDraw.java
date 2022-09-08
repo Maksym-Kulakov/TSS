@@ -6,42 +6,24 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.util.ShapeUtilities;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 
-public class CrossAreaChartDraw extends JFrame implements Runnable {
+public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public static Point2D.Double centerPoint = new Point2D.Double(53.93652, 7.696533);
-//    private static final int N = 16;
     private static final String title = "South Cross Area";
     private XYSeries chartSouth = new XYSeries("Conflict Ships");
-/*    //horizontal axe
-    static final double x1 = 53.9045;
-    static final double y1 = 7.6515;
-    static final double x2 = 53.9208;
-    static final double y2 = 7.7681;
-    static final double xx = x2 - x1;
-    static final double yy = y2 - y1;
-    //vertical axe
-    static final double x1v = 53.95167;
-    static final double y1v = 7.615;
-    static final double x2v = 53.9045;
-    static final double y2v = 7.6515;
-    static final double xxv = x2v - x1v;
-    static final double yyv = y2v - y1v;*/
-
-/*    {
-        Vector2D vectorLowerBorder = Vector2D.create(new CoordinateXY(53.89917, 7.616008),
-                new CoordinateXY(53.9208, 7.7681));
-    }*/
+    private static final BasicStroke STROKE = new BasicStroke(0.1f);
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -64,7 +46,18 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
                 title, "X", "Y", createChartData(),
                 PlotOrientation.VERTICAL, true, true, false);
         XYPlot xyPlot = (XYPlot) jfreechart.getPlot();
-        XYItemRenderer renderer = xyPlot.getRenderer();
+        xyPlot.setRenderer(new XYLineAndShapeRenderer(false, true) {
+            @Override
+            public Shape getItemShape(int row, int col) {
+                    return ShapeUtilities.createDiagonalCross(5, 2);
+            }
+        });
+        XYLineAndShapeRenderer renderer
+                = (XYLineAndShapeRenderer) jfreechart.getXYPlot().getRenderer();
+        renderer.setDefaultShapesFilled(true);
+        renderer.setUseFillPaint(true);
+        renderer.setDrawOutlines(true);
+
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
         domain.setRange(-2.6, 2.6);
         domain.setTickUnit(new NumberTickUnit(1));
@@ -86,7 +79,6 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
     }
 
     private void update() {
-//        chartSouth.add(new XYDataItem(0,0));
         for (ConflictShips ships : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
             double x_cpaLocation = ships.cpaLocation.getCoordinate()[0];
             double y_cpaLocation = ships.cpaLocation.getCoordinate()[1];
@@ -124,18 +116,6 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
             System.out.println("ee");
         }
     }
-
-
-
-/*    private void update() {
-        for (ConflictShips ships : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
-            double x3 = ships.cpaLocation.getCoordinate()[0];
-            double y3 = ships.cpaLocation.getCoordinate()[1];
-            Double chartY = ((xx * (x3 - x1)) + (yy * (y3 - y1))) / ((xx * xx) + (yy * yy));
-            Double chartX = ((xxv * (x3 - x1v)) + (yyv * (y3 - y1v))) / ((xxv * xxv) + (yyv * yyv));
-            chartSouth.add(new XYDataItem(chartX,chartY));
-        }
-    }*/
 
     public void run() {
         EventQueue.invokeLater(() -> {
