@@ -66,10 +66,10 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
         XYPlot xyPlot = (XYPlot) jfreechart.getPlot();
         XYItemRenderer renderer = xyPlot.getRenderer();
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setRange(-2.5, 2.5);
+        domain.setRange(-2.6, 2.6);
         domain.setTickUnit(new NumberTickUnit(1));
         NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
-        range.setRange(-1.5, 1.5);
+        range.setRange(-1.6, 1.6);
         range.setTickUnit(new NumberTickUnit(1));
         return new ChartPanel(jfreechart){
             @Override
@@ -96,18 +96,31 @@ public class CrossAreaChartDraw extends JFrame implements Runnable {
             if (startingAzimuth < 0) {
                 startingAzimuth = 360 + startingAzimuth;
             }
-            double correctedAzimuth = startingAzimuth + 24.0;
+            double correctedAzimuth = startingAzimuth + 14.0;
             double angle = correctedAzimuth % 90;
             double geodesicDistance = ApplicationCPA.geoCalc.getGeodesicDistance();
-            double horizontalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle));
-            if (correctedAzimuth > 180) {
-                horizontalValue = 0 - horizontalValue;
+            if (correctedAzimuth > 0 && correctedAzimuth <= 90
+            || correctedAzimuth > 180 && correctedAzimuth <= 270) {
+                double horizontalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
+                if (correctedAzimuth > 180) {
+                    horizontalValue = 0 - horizontalValue;
+                }
+                double verticalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
+                if (correctedAzimuth > 90 && correctedAzimuth < 270) {
+                    verticalValue = 0 - verticalValue;
+                }
+                chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
+            } else {
+                double horizontalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
+                if (correctedAzimuth > 180) {
+                    horizontalValue = 0 - horizontalValue;
+                }
+                double verticalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
+                if (correctedAzimuth > 90 && correctedAzimuth < 270) {
+                    verticalValue = 0 - verticalValue;
+                }
+                chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
             }
-            double verticalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle));
-            if (correctedAzimuth > 90 && correctedAzimuth < 180) {
-                verticalValue = 0 - verticalValue;
-            }
-            chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
             System.out.println("ee");
         }
     }
