@@ -17,6 +17,7 @@ import org.jfree.util.ShapeUtilities;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
 public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
@@ -25,9 +26,10 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     private XYSeries chartSouth = new XYSeries("Conflict Ships");
     private static final BasicStroke STROKE = new BasicStroke(0.1f);
 
+
     public CrossAreaChartDraw(String s) {
         super(s);
-        update();
+//        update();
         final ChartPanel chartPanel = createChartPanel();
         this.add(chartPanel, BorderLayout.CENTER);
         JPanel control = new JPanel();
@@ -41,6 +43,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         this.add(control, BorderLayout.SOUTH);
     }
 
+
+
+
     private ChartPanel createChartPanel() {
         JFreeChart jfreechart = ChartFactory.createScatterPlot(
                 title, "X", "Y", createChartData(),
@@ -49,14 +54,14 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         xyPlot.setRenderer(new XYLineAndShapeRenderer(false, true) {
             @Override
             public Shape getItemShape(int row, int col) {
-                    return ShapeUtilities.createDiagonalCross(5, 2);
+                    return ShapeUtilities.createDiagonalCross(7, 4);
             }
         });
         XYLineAndShapeRenderer renderer
                 = (XYLineAndShapeRenderer) jfreechart.getXYPlot().getRenderer();
-        renderer.setDefaultShapesFilled(true);
+//        renderer.setDefaultShapesFilled(true);
         renderer.setUseFillPaint(true);
-        renderer.setDrawOutlines(true);
+//        renderer.setDrawOutlines(true);
 
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
         domain.setRange(-2.6, 2.6);
@@ -76,6 +81,10 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(chartSouth);
         return xySeriesCollection;
+    }
+
+    private Shape createCircle(double size){
+        return new Ellipse2D.Double(-size/2,-size/2,size,size);
     }
 
     private void update() {
@@ -112,9 +121,14 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     verticalValue = 0 - verticalValue;
                 }
                 chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
+                createCircle(ships.cpaValue);
             }
             System.out.println("ee");
         }
+        CrossAreaChart crossAreaChart = new CrossAreaChart();
+
+        //**just for experiment
+        crossAreaChart.addHardCodedConflict();
     }
 
     public void run() {

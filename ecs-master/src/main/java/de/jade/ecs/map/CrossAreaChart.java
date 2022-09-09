@@ -13,19 +13,25 @@ public class CrossAreaChart {
     static {
         DirectPosition cpaLocation1 = new DirectPosition2D(53.91895, 7.694732);
         DirectPosition cpaLocation2 = new DirectPosition2D(53.95917, 7.71458);
-        DirectPosition cpaLocation3 = new DirectPosition2D(53.94025, 7.625657);
         ShipAis shipAis1 = new ShipAis();
         ShipAis shipAis2 = new ShipAis();
         ConflictShips conflictShips1
-                = new ConflictShips(0.1, 5.0, cpaLocation1, shipAis1, shipAis2);
+                = new ConflictShips(0.4, 5.0, cpaLocation1, shipAis1, shipAis2);
         ConflictShips conflictShips2
-                = new ConflictShips(0.2, 5.0, cpaLocation2, shipAis1, shipAis2);
-        ConflictShips conflictShips3
-                = new ConflictShips(0.3, 5.0, cpaLocation3, shipAis1, shipAis2);
+                = new ConflictShips(0.8, 5.0, cpaLocation2, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(1, conflictShips1);
         shipsConflictsInCrossAreaSouth.put(2, conflictShips2);
+    }
+
+    public void addHardCodedConflict() {
+        ShipAis shipAis1 = new ShipAis();
+        ShipAis shipAis2 = new ShipAis();
+        DirectPosition cpaLocation3 = new DirectPosition2D(53.94025, 7.625657);
+        ConflictShips conflictShips3
+                = new ConflictShips(1.4, 5.0, cpaLocation3, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(3, conflictShips3);
     }
+
 
     public static Point2D.Double point1 = new Point2D.Double(53.92279, 7.778727);
     public static Point2D.Double point2 = new Point2D.Double(53.97126, 7.75936);
