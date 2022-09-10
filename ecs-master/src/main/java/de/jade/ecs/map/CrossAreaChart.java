@@ -16,14 +16,14 @@ public class CrossAreaChart {
         ShipAis shipAis1 = new ShipAis();
         ShipAis shipAis2 = new ShipAis();
         ConflictShips conflictShips1
-                = new ConflictShips(0.2, 5.0, cpaLocation1, shipAis1, shipAis2);
+                = new ConflictShips(0.2, 4.0, cpaLocation1, shipAis1, shipAis2);
         ConflictShips conflictShips2
-                = new ConflictShips(0.5, 5.0, cpaLocation2, shipAis1, shipAis2);
+                = new ConflictShips(0.5, 7.0, cpaLocation2, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(1, conflictShips1);
         shipsConflictsInCrossAreaSouth.put(2, conflictShips2);
     }
 
-    public void addHardCodedConflict() {
+    public static void addShipsConflictHardCore() {
         ShipAis shipAis1 = new ShipAis();
         ShipAis shipAis2 = new ShipAis();
         DirectPosition cpaLocation3 = new DirectPosition2D(53.94025, 7.625657);
