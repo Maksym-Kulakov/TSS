@@ -2,13 +2,13 @@ package de.jade.ecs.map;
 
 import org.apache.sis.geometry.DirectPosition2D;
 import org.opengis.geometry.DirectPosition;
-
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class CrossAreaChart {
     public static final int MIN_CPA_TO_GET_ON_CHART = 3;
-    public static HashMap<Integer, ConflictShips> shipsConflictsInCrossAreaSouth = new HashMap<>();
+    public static HashMap<Integer, ConflictShips> shipsConflictsInCrossAreaSouth = new LinkedHashMap<>();
 
     static {
         DirectPosition cpaLocation1 = new DirectPosition2D(53.91895, 7.694732);
@@ -16,9 +16,9 @@ public class CrossAreaChart {
         ShipAis shipAis1 = new ShipAis();
         ShipAis shipAis2 = new ShipAis();
         ConflictShips conflictShips1
-                = new ConflictShips(0.4, 5.0, cpaLocation1, shipAis1, shipAis2);
+                = new ConflictShips(0.2, 5.0, cpaLocation1, shipAis1, shipAis2);
         ConflictShips conflictShips2
-                = new ConflictShips(0.8, 5.0, cpaLocation2, shipAis1, shipAis2);
+                = new ConflictShips(0.5, 5.0, cpaLocation2, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(1, conflictShips1);
         shipsConflictsInCrossAreaSouth.put(2, conflictShips2);
     }
@@ -28,7 +28,7 @@ public class CrossAreaChart {
         ShipAis shipAis2 = new ShipAis();
         DirectPosition cpaLocation3 = new DirectPosition2D(53.94025, 7.625657);
         ConflictShips conflictShips3
-                = new ConflictShips(1.4, 5.0, cpaLocation3, shipAis1, shipAis2);
+                = new ConflictShips(0.0, 5.0, cpaLocation3, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(3, conflictShips3);
     }
 

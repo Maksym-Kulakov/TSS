@@ -19,12 +19,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public static Point2D.Double centerPoint = new Point2D.Double(53.93652, 7.696533);
     private static final String title = "South Cross Area";
     private XYSeries chartSouth = new XYSeries("Conflict Ships");
     private static final BasicStroke STROKE = new BasicStroke(0.1f);
+    private static List<Double> cpaValueConflict = new ArrayList<Double>();
+
 
 
     public CrossAreaChartDraw(String s) {
@@ -43,9 +47,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         this.add(control, BorderLayout.SOUTH);
     }
 
-
-
-
     private ChartPanel createChartPanel() {
         JFreeChart jfreechart = ChartFactory.createScatterPlot(
                 title, "X", "Y", createChartData(),
@@ -54,7 +55,16 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         xyPlot.setRenderer(new XYLineAndShapeRenderer(false, true) {
             @Override
             public Shape getItemShape(int row, int col) {
-                    return ShapeUtilities.createDiagonalCross(7, 4);
+                if (!cpaValueConflict.isEmpty()) {
+                    double cpaValue = (double)cpaValueConflict.get(cpaValueConflict.size() - col - 1) * 115;
+                    if (cpaValueConflict.get(cpaValueConflict.size() - col - 1) < 0.2) {
+                        return ShapeUtilities.createDiagonalCross(5, 3);
+                    }
+//                    return ShapeUtilities.createDiagonalCross((float) cpaValue, (float) cpaValue);
+                    return new Ellipse2D.Double(- (float) cpaValue / 2, - (float) cpaValue / 2, (float) cpaValue, (float) cpaValue);
+                } else {
+                    return super.getItemShape(row, col);
+                }
             }
         });
         XYLineAndShapeRenderer renderer
@@ -89,6 +99,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
     private void update() {
         for (ConflictShips ships : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
+            cpaValueConflict.add(ships.cpaValue);
             double x_cpaLocation = ships.cpaLocation.getCoordinate()[0];
             double y_cpaLocation = ships.cpaLocation.getCoordinate()[1];
             ApplicationCPA.geoCalc.setStartGeographicPoint(centerPoint.x, centerPoint.y);
@@ -121,7 +132,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     verticalValue = 0 - verticalValue;
                 }
                 chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
-                createCircle(ships.cpaValue);
             }
             System.out.println("ee");
         }
