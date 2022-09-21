@@ -1,4 +1,4 @@
-package de.jade.ecs.map;
+package de.jade.ecs.map.grapchic;
 
 import java.awt.Color;
 import java.awt.Dimension;

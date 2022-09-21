@@ -4,14 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a6c1de21-6be9-455d-b489-f2a50afef8c4" name="Changes" comment="" />
+    <list default="true" id="a6c1de21-6be9-455d-b489-f2a50afef8c4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/CandlestickRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/grapchic/CandlestickRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/ChartViewer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/ChartViewer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/CustomDonutPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/grapchic/CustomDonutPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/MyClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/grapchic/MyClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/RingChartDemo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/jade/ecs/map/grapchic/RingChartDemo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/de/jade/ecs/map/ChartViewer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/de/jade/ecs/map/ChartViewer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/de/jade/ecs/map/MyClass.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../s57reader-master/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../s57reader-master/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../s57reader-master/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../s57reader-master/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../s57reader-master/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../s57reader-master/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulator-master/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../simulator-master/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulator-master/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../simulator-master/.idea/vcs.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/SaHFE-TSS" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">

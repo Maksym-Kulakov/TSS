@@ -1,4 +1,4 @@
-package de.jade.ecs.map;
+package de.jade.ecs.map.grapchic;
 
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CrosshairState;

@@ -16,7 +16,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
 
-import de.jade.ecs.map.shipchart.DefaultShip;
+import de.jade.ecs.map.grapchic.MyClass;
 import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.ShipPainter;
 import org.jxmapviewer.JXMapViewer;

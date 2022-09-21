@@ -4,14 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e889b9d9-8f5b-40e3-90ee-298d140122b4" name="Changes" comment="" />
+    <list default="true" id="e889b9d9-8f5b-40e3-90ee-298d140122b4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../ecs-master/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/CandlestickRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/grapchic/CandlestickRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/ChartViewer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/ChartViewer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/CustomDonutPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/grapchic/CustomDonutPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/MyClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/grapchic/MyClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/RingChartDemo1.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/src/main/java/de/jade/ecs/map/grapchic/RingChartDemo1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/target/classes/de/jade/ecs/map/ChartViewer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../ecs-master/target/classes/de/jade/ecs/map/ChartViewer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ecs-master/target/classes/de/jade/ecs/map/MyClass.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulator-master/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../simulator-master/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulator-master/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../simulator-master/.idea/vcs.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -32,7 +43,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ecs-master" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager">
     <configuration name="Application" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
