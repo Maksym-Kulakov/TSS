@@ -3,6 +3,7 @@ package de.jade.ecs.map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -41,6 +42,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chartSouth.clear();
+                xyPlot.clearAnnotations();
                 update();
             }
         }));
@@ -147,6 +149,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             }
             textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
             xyPlot.addAnnotation(textAnnotation);
+            XYLineAnnotation xyLineAnnotation = new XYLineAnnotation(horizontalValue,verticalValue,0,0);
+            xyPlot.addAnnotation(textAnnotation);
+            xyPlot.addAnnotation(xyLineAnnotation);
         }
         //**just for experiment
         CrossAreaChart.addShipsConflictHardCore();

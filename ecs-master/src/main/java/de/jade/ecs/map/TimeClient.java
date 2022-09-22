@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
  * @author www.codejava.net
  */
 public class TimeClient implements Runnable {
-
+	static int i;
 	double shiplat;
 	double shiplong;
 	int mmsi;
@@ -83,6 +83,16 @@ public class TimeClient implements Runnable {
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
 					}
+					if (i == 1) {
+						ShipAis shipAis1
+								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14);
+					}
+					if (i == 10) {
+						ShipAis shipAis2
+								= new ShipAis(11111111, 53.96585, 7.624865, 138, 10);
+					}
+					i++;
+
 				} catch (SentenceException e) {
 					e.printStackTrace();
 				} catch (AisMessageException e) {
