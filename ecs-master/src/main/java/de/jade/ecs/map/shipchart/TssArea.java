@@ -9,8 +9,8 @@ public class TssArea {
     public static Point2D.Double point4 = new Point2D.Double(53.9208, 7.7681);
     public static Point2D.Double[] trafficLineToEast = {point1, point2, point3, point4};
 
-    public static Point2D.Double point21 = new Point2D.Double(53.95167, 7.615);
-    public static Point2D.Double point22 = new Point2D.Double(53.95667, 7.1605);
+    public static Point2D.Double point21 = new Point2D.Double(53.95112, 7.615555);
+    public static Point2D.Double point22 = new Point2D.Double(53.95606, 7.6468);
     public static Point2D.Double point23 = new Point2D.Double(54.14, 7.48);
     public static Point2D.Double point24 = new Point2D.Double(54.14, 7.446667);
     public static Point2D.Double[] trafficLineToSouth = {point21, point22, point23, point24};

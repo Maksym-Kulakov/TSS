@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class CrossAreaChart {
-    public static final int MIN_CPA_TO_GET_ON_CHART = 3;
+    public static final int MIN_CPA_TO_GET_ON_CHART = 1;
     public static HashMap<Integer, ConflictShips> shipsConflictsInCrossAreaSouth = new LinkedHashMap<>();
 
-    static {
+/*    static {
         DirectPosition cpaLocation1 = new DirectPosition2D(53.91895, 7.694732);
         DirectPosition cpaLocation2 = new DirectPosition2D(53.95917, 7.71458);
         ShipAis shipAis1 = new ShipAis();
@@ -21,7 +21,7 @@ public class CrossAreaChart {
                 = new ConflictShips(0.5, 7.0, cpaLocation2, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(1, conflictShips1);
         shipsConflictsInCrossAreaSouth.put(2, conflictShips2);
-    }
+    }*/
 
     public static void addShipsConflictHardCore() {
         ShipAis shipAis1 = new ShipAis();

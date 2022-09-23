@@ -83,13 +83,14 @@ public class TimeClient implements Runnable {
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
 					}
+					//for test only
 					if (i == 1) {
 						ShipAis shipAis1
 								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14);
 					}
 					if (i == 10) {
 						ShipAis shipAis2
-								= new ShipAis(11111111, 53.96585, 7.624865, 138, 10);
+								= new ShipAis(22222222, 53.96585, 7.624865, 138, 10);
 					}
 					i++;
 

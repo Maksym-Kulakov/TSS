@@ -59,9 +59,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             public Shape getItemShape(int row, int col) {
                 if (!shipsPairInConflict.isEmpty()) {
                     double cpaValue = shipsPairInConflict.get(shipsPairInConflict.size() - col - 1).cpaValue * 115;
-                    if (shipsPairInConflict.get(shipsPairInConflict.size() - col - 1).cpaValue < 0.2) {
+     /*               if (shipsPairInConflict.get(shipsPairInConflict.size() - col - 1).cpaValue < 0.2) {
                         return ShapeUtilities.createDiagonalCross(9, 6);
-                    }
+                    }*/
                     Ellipse2D.Double shapeMark
                             = new Ellipse2D.Double(-(float) cpaValue / 2, -(float) cpaValue / 2,
                             (float) cpaValue, (float) cpaValue);
@@ -140,8 +140,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
             }
             System.out.println("shipsConflicts updated");
-            textAnnotation = new XYTextAnnotation(String.valueOf(shipsPair.tcpaValue),
-                    horizontalValue, verticalValue);
+            textAnnotation = new XYTextAnnotation(String.valueOf(Math.round(shipsPair.tcpaValue)),
+                    horizontalValue + shipsPair.cpaValue, verticalValue + shipsPair.cpaValue);
             if (shipsPair.tcpaValue < 6.0) {
                 textAnnotation.setPaint(Color.red);
             } else {
@@ -153,8 +153,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             xyPlot.addAnnotation(textAnnotation);
             xyPlot.addAnnotation(xyLineAnnotation);
         }
-        //**just for experiment
-        CrossAreaChart.addShipsConflictHardCore();
     }
 
     public void run() {

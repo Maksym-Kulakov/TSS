@@ -40,7 +40,6 @@ public class ApplicationCPA implements Runnable {
 		});
 	}
 
-
 	private void doConflictSituations(ShipAis shipAis, ShipAis shipAIS2) {
 		ShipState shipStateA = new ShipState(shipAis.getMmsi(),
 				new Point2D.Double(shipAis.latitude, shipAis.longitude), shipAis.hdg, shipAis.speed); //8, 54 // 8.16, 54
@@ -48,7 +47,7 @@ public class ApplicationCPA implements Runnable {
 				new Point2D.Double(shipAIS2.latitude, shipAIS2.longitude), shipAIS2.hdg, shipAIS2.speed); //8.16, 53.9 | 0.45507,-0.29586
 
 		Point2D position1 = shipStateA.getPoint();
-		geoCalc.setStartGeographicPoint(position1.getY(), position1.getX());
+		geoCalc.setStartGeographicPoint(position1.getX(), position1.getY());
 
 		Point2D position2 = shipStateB.getPoint();
 		geoCalc.setEndGeographicPoint(position2.getX(), position2.getY());
