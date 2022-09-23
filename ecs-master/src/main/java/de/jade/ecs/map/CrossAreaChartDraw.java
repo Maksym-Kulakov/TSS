@@ -1,5 +1,6 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.shipchart.TssArea;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -16,6 +17,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.util.ShapeUtilities;
+import org.jxmapviewer.viewer.GeoPosition;
 import org.opengis.geometry.DirectPosition;
 
 import javax.swing.*;
@@ -140,6 +142,56 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         return new double[]{horizontalValue, verticalValue};
     }
 
+    private double[] getXYCoordinatesEnds(double xCpaLocation, double yCpaLocation,
+                                          GeoPosition geoPosition, double hdg) {
+        double xValueEnd = 0;
+        double yValueEnd = 0;
+        hdg = hdg + 14;
+        double angle = 0;
+        Point2D.Double geoPoint = new Point2D.Double(geoPosition.getLatitude(),
+                geoPosition.getLongitude());
+        if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
+            xValueEnd = - 2.6;
+            if (hdg == 90) {
+                yValueEnd = yCpaLocation;
+            } else if (hdg < 90) {
+                double correction = (2.6 - xCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                yValueEnd = yCpaLocation - correction;
+            } else if (hdg > 90) {
+                angle = 180 - hdg;
+                double correction = (2.6 - xCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                yValueEnd = yCpaLocation + correction;
+            }
+        } else if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToSouth)) {
+            yValueEnd = 1.6;
+            if (hdg == 360) {
+                xValueEnd = xCpaLocation;
+            } else if (hdg < 180) {
+                angle = hdg - 90;
+                double correction = (1.6 - yCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                xValueEnd = xCpaLocation - correction;
+            } else if (hdg > 180) {
+                angle = 270 - hdg;
+                double correction = (1.6 - yCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                xValueEnd = xCpaLocation + correction;
+            }
+        } else if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToNorth)) {
+            yValueEnd = -1.6;
+            if (hdg == 0) {
+                xValueEnd = xCpaLocation;
+            } else if (hdg > 0) {
+                angle = 90 - hdg;
+                double correction = (1.6 - yCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                xValueEnd = xCpaLocation - correction;
+            } else if (hdg < 360) {
+                angle = hdg - 270;
+                double correction = Math.abs(-1.6 - yCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
+                xValueEnd = xCpaLocation + correction;
+            }
+        }
+        return new double[]{xValueEnd, yValueEnd};
+    }
+
     private void update() {
             double xValue = 0;
             double yValue = 0;
@@ -168,8 +220,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             double xValueLine2 = xyCoordinatesLine2[0];
             double yValueLine2 = xyCoordinatesLine2[1];
 
-            XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(1,1,xValueLine1,yValueLine1);
-            XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(-1,-1,xValueLine2,yValueLine2);
+            double[] xyCoordinatesEnds1 = getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA.geoPosition, shipsPair.shipA.hdg);
+            double[] xyCoordinatesEnds2 = getXYCoordinatesEnds(xValueLine2, yValueLine2, shipsPair.shipB.geoPosition, shipsPair.shipB.hdg);
+
+            XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0],xyCoordinatesEnds1[1],xValueLine1,yValueLine1);
+            XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0],xyCoordinatesEnds2[1],xValueLine2,yValueLine2);
 
             xyPlot.addAnnotation(textAnnotation);
             xyPlot.addAnnotation(xyLineAnnotation1);
