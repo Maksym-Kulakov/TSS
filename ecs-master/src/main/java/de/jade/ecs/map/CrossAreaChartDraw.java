@@ -16,6 +16,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.util.ShapeUtilities;
+import org.opengis.geometry.DirectPosition;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -101,47 +103,55 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         return new Ellipse2D.Double(-size/2,-size/2,size,size);
     }
 
-    private void update() {
+    private double[] getXYCoordinates(DirectPosition directPosition) {
         double horizontalValue;
         double verticalValue;
+        double lat_cpaLocation = directPosition.getCoordinate()[0];
+        double long_cpaLocation = directPosition.getCoordinate()[1];
+        ApplicationCPA.geoCalc.setStartGeographicPoint(centerPoint.x, centerPoint.y);
+        ApplicationCPA.geoCalc.setEndGeographicPoint(lat_cpaLocation, long_cpaLocation);
+        double startingAzimuth = ApplicationCPA.geoCalc.getStartingAzimuth();
+        if (startingAzimuth < 0) {
+            startingAzimuth = 360 + startingAzimuth;
+        }
+        double correctedAzimuth = startingAzimuth + 14.0;
+        double angle = correctedAzimuth % 90;
+        double geodesicDistance = ApplicationCPA.geoCalc.getGeodesicDistance();
+        if (correctedAzimuth > 0 && correctedAzimuth <= 90
+                || correctedAzimuth > 180 && correctedAzimuth <= 270) {
+            horizontalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
+            if (correctedAzimuth > 180) {
+                horizontalValue = 0 - horizontalValue;
+            }
+            verticalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
+            if (correctedAzimuth > 90 && correctedAzimuth < 270) {
+                verticalValue = 0 - verticalValue;
+            }
+        } else {
+            horizontalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
+            if (correctedAzimuth > 180) {
+                horizontalValue = 0 - horizontalValue;
+            }
+            verticalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
+            if (correctedAzimuth > 90 && correctedAzimuth < 270) {
+                verticalValue = 0 - verticalValue;
+            }
+        }
+        return new double[]{horizontalValue, verticalValue};
+    }
+
+    private void update() {
+            double xValue = 0;
+            double yValue = 0;
         for (ConflictShips shipsPair : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
             shipsPairInConflict.add(shipsPair);
-            double x_cpaLocation = shipsPair.cpaLocation.getCoordinate()[0];
-            double y_cpaLocation = shipsPair.cpaLocation.getCoordinate()[1];
-            ApplicationCPA.geoCalc.setStartGeographicPoint(centerPoint.x, centerPoint.y);
-            ApplicationCPA.geoCalc.setEndGeographicPoint(x_cpaLocation, y_cpaLocation);
-            double startingAzimuth = ApplicationCPA.geoCalc.getStartingAzimuth();
-            if (startingAzimuth < 0) {
-                startingAzimuth = 360 + startingAzimuth;
-            }
-            double correctedAzimuth = startingAzimuth + 14.0;
-            double angle = correctedAzimuth % 90;
-            double geodesicDistance = ApplicationCPA.geoCalc.getGeodesicDistance();
-            if (correctedAzimuth > 0 && correctedAzimuth <= 90
-            || correctedAzimuth > 180 && correctedAzimuth <= 270) {
-                horizontalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
-                if (correctedAzimuth > 180) {
-                    horizontalValue = 0 - horizontalValue;
-                }
-                verticalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
-                if (correctedAzimuth > 90 && correctedAzimuth < 270) {
-                    verticalValue = 0 - verticalValue;
-                }
-                chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
-            } else {
-                horizontalValue = geodesicDistance / 1852 * Math.abs(Math.cos(angle * Math.PI / 180));
-                if (correctedAzimuth > 180) {
-                    horizontalValue = 0 - horizontalValue;
-                }
-                verticalValue = geodesicDistance / 1852 * Math.abs(Math.sin(angle * Math.PI / 180));
-                if (correctedAzimuth > 90 && correctedAzimuth < 270) {
-                    verticalValue = 0 - verticalValue;
-                }
-                chartSouth.add(new XYDataItem(horizontalValue,verticalValue));
-            }
+            double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
+            xValue = xyCoordinates[0];
+            yValue = xyCoordinates[1];
+            chartSouth.add(new XYDataItem(xValue, yValue));
             System.out.println("shipsConflicts updated");
             textAnnotation = new XYTextAnnotation(String.valueOf(Math.round(shipsPair.tcpaValue)),
-                    horizontalValue + shipsPair.cpaValue, verticalValue + shipsPair.cpaValue);
+                    xValue + shipsPair.cpaValue, yValue + shipsPair.cpaValue);
             if (shipsPair.tcpaValue < 6.0) {
                 textAnnotation.setPaint(Color.red);
             } else {
@@ -149,9 +159,21 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             }
             textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
             xyPlot.addAnnotation(textAnnotation);
-            XYLineAnnotation xyLineAnnotation = new XYLineAnnotation(horizontalValue,verticalValue,0,0);
+
+            double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
+            double xValueLine1 = xyCoordinatesLine1[0];
+            double yValueLine1 = xyCoordinatesLine1[1];
+
+            double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
+            double xValueLine2 = xyCoordinatesLine2[0];
+            double yValueLine2 = xyCoordinatesLine2[1];
+
+            XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(1,1,xValueLine1,yValueLine1);
+            XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(-1,-1,xValueLine2,yValueLine2);
+
             xyPlot.addAnnotation(textAnnotation);
-            xyPlot.addAnnotation(xyLineAnnotation);
+            xyPlot.addAnnotation(xyLineAnnotation1);
+            xyPlot.addAnnotation(xyLineAnnotation2);
         }
     }
 

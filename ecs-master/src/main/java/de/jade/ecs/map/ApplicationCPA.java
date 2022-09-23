@@ -113,7 +113,8 @@ public class ApplicationCPA implements Runnable {
 
 		Integer key = new PairHash(shipAis.getMmsi(), shipAIS2.getMmsi()).hashCode();
 		ConflictShips conflictShips
-				= new ConflictShips(cpaDistanceNm, cpaTimeMin, cpaCenterPsn, shipAis, shipAIS2);
+				= new ConflictShips(cpaDistanceNm, cpaTimeMin,
+				cpaCenterPsn, shipAis, shipAIS2, position1Future, position2Future);
 		shipsConflicts.put(key, conflictShips);
 
 		CrossAreaChart.getShipsConflictsInCrossAreaSouth();

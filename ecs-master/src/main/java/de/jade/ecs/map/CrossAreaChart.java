@@ -23,14 +23,14 @@ public class CrossAreaChart {
         shipsConflictsInCrossAreaSouth.put(2, conflictShips2);
     }*/
 
-    public static void addShipsConflictHardCore() {
+ /*   public static void addShipsConflictHardCore() {
         ShipAis shipAis1 = new ShipAis();
         ShipAis shipAis2 = new ShipAis();
         DirectPosition cpaLocation3 = new DirectPosition2D(53.94025, 7.625657);
         ConflictShips conflictShips3
                 = new ConflictShips(0.0, 5.0, cpaLocation3, shipAis1, shipAis2);
         shipsConflictsInCrossAreaSouth.put(3, conflictShips3);
-    }
+    }*/
 
 
     public static Point2D.Double point1 = new Point2D.Double(53.92279, 7.778727);
