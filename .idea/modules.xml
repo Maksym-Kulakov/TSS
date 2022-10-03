@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/TSS.iml" filepath="$PROJECT_DIR$/.idea/TSS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ecs-master/ecs.iml" filepath="$PROJECT_DIR$/ecs-master/ecs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/s57reader-master/s57reader.iml" filepath="$PROJECT_DIR$/s57reader-master/s57reader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simulator-master/simulator.iml" filepath="$PROJECT_DIR$/simulator-master/simulator.iml" />
+    </modules>
+  </component>
+</project>
