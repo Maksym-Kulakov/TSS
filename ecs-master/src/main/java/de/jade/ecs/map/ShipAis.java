@@ -1,5 +1,7 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.geochart.AlterationsOfCourse;
+import de.jade.ecs.map.geochart.GeoTssAreas;
 import de.jade.ecs.map.riskassessment.TcpaCalculation;
 import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.TssArea;
@@ -21,16 +23,19 @@ public class ShipAis implements ShipInter {
     double longitude;
     double hdg;
     double speed;
+    String destination;
+    GeoTssAreas geoTssArea;
 
     public ShipAis() {
     }
 
-    public ShipAis(int mmsiNum, double latitude, double longitude, double hdg, double speed) {
+    public ShipAis(int mmsiNum, double latitude, double longitude, double hdg, double speed, String destination) {
         this.hdg = hdg;
         this.mmsiNum = mmsiNum;
         this.latitude = latitude;
         this.longitude = longitude;
         this.speed = speed;
+        this.destination = destination;
         geoPosition = new GeoPosition(latitude, longitude);
         addShipToAisHashMap(this);
         addShipsInsideAreaAisHashMapToEast(this);
@@ -47,6 +52,7 @@ public class ShipAis implements ShipInter {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
             shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
+            ship.geoTssArea = GeoTssAreas.TO_EAST;
         }
     }
 
@@ -54,6 +60,7 @@ public class ShipAis implements ShipInter {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToSouth)) {
             shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
+            ship.geoTssArea = GeoTssAreas.TO_SOUTH;
         }
     }
 
@@ -61,6 +68,7 @@ public class ShipAis implements ShipInter {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToNorth)) {
             shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
+            ship.geoTssArea = GeoTssAreas.TO_NORTH;
         }
     }
 

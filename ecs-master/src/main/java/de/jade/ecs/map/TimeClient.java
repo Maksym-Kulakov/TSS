@@ -3,6 +3,7 @@ package de.jade.ecs.map;
 import dk.dma.ais.binary.SixbitException;
 import dk.dma.ais.message.AisMessage;
 import dk.dma.ais.message.AisMessage1;
+import dk.dma.ais.message.AisMessage5;
 import dk.dma.ais.message.AisMessageException;
 import dk.dma.ais.sentence.SentenceException;
 import dk.dma.ais.sentence.Vdm;
@@ -64,11 +65,17 @@ public class TimeClient implements Runnable {
 				try {
 					vdm.parse(data.toString());
 					AisMessage msg = AisMessage.getInstance(vdm);
-					
+
+					String dest = null;
+					if (msg instanceof AisMessage5) {
+						AisMessage5 AISMSG5 = (AisMessage5) msg;
+						dest = AISMSG5.getDest();
+					}
+
 					if(msg instanceof AisMessage1) {
 //						System.out.println(msg.toString());
 						AisMessage1 AISMSG1 = (AisMessage1) msg;
-						
+
 //						System.out.println("Position: " + AISMSG1.getPos().getLatitudeDouble() + ", "+ AISMSG1.getPos().getLongitudeDouble());
 
 						shiplat = AISMSG1.getPos().getLatitudeDouble();
@@ -77,20 +84,23 @@ public class TimeClient implements Runnable {
 						mmsi = AISMSG1.getUserId();
 						hdg = AISMSG1.getCog() / 10.0;
 						speed = AISMSG1.getSog() / 10.0;
+					/*	String dest = AISMSG5.getDest();*/
 // 						System.out.println(speed);
-						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed);
+						ShipAis shipAis = new ShipAis(mmsi, shiplat, shiplong, hdg, speed, dest);
 						}
 //						shipAis.addShipsOnMap(chartViewer, ShipAis.shipsAisHashMap);
 
 					}
+
+
 					//for test only
 					if (i == 1) {
 						ShipAis shipAis1
-								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14);
+								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14, "WILHELMSHAVEN");
 					}
 					if (i == 10) {
 						ShipAis shipAis2
-								= new ShipAis(22222222, 53.96585, 7.624865, 138, 10);
+								= new ShipAis(22222222, 53.96585, 7.624865, 138, 10, "HAMBURG");
 					}
 					i++;
 
