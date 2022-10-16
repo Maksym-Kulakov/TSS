@@ -7,7 +7,6 @@ import dk.dma.ais.message.AisMessage5;
 import dk.dma.ais.message.AisMessageException;
 import dk.dma.ais.sentence.SentenceException;
 import dk.dma.ais.sentence.Vdm;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

@@ -219,7 +219,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             if (shipsPair.tcpaValue < 6.0) {
                 textAnnotation.setPaint(Color.red);
             } else {
-                textAnnotation.setPaint(Color.black);
+                textAnnotation.setPaint(Color.white);
             }
             textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
 
@@ -274,6 +274,102 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
             xyPlot.addAnnotation(textAnnotation);
 
+            drawTcpa(xyPlot, xValue, yValue, shipsPair.tcpaValue);
+
+        }
+    }
+
+    private void drawTcpa(XYPlot xyPlot, double xValue, double yValue, double tcpaValue) {
+        double diam = 0.04;
+        double ref = 0.02;
+        double dist = 0.1075;
+        if (tcpaValue > 3) {
+            Ellipse2D.Double cpaLocationShape1
+                    = new Ellipse2D.Double(xValue - ref, yValue + dist + ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 6) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape1, basicStroke, Color.RED, Color.RED));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape1, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 6) {
+            Ellipse2D.Double cpaLocationShape2
+                    = new Ellipse2D.Double(xValue - ref + dist, yValue + dist - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 9) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape2, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape2, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 9) {
+            Ellipse2D.Double cpaLocationShape3
+                    = new Ellipse2D.Double(xValue  + dist + ref, yValue - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 12) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape3, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape3, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 12) {
+            Ellipse2D.Double cpaLocationShape4
+                    = new Ellipse2D.Double(xValue - ref + dist, yValue - dist - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 18) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape4, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape4, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 15) {
+            Ellipse2D.Double cpaLocationShape5
+                    = new Ellipse2D.Double(xValue - ref, yValue - dist - ref - ref - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 18) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape5, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape5, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 18) {
+            Ellipse2D.Double cpaLocationShape6
+                    = new Ellipse2D.Double(xValue - ref - dist, yValue - dist - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 21) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape6, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape6, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 21) {
+            Ellipse2D.Double cpaLocationShape7
+                    = new Ellipse2D.Double(xValue  - dist - ref - ref -ref, yValue - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 24) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape7, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape7, basicStroke, Color.GRAY, Color.GRAY));
+            }
+        }
+        if (tcpaValue >= 24) {
+            Ellipse2D.Double cpaLocationShape8
+                   = new Ellipse2D.Double(xValue - ref - dist, yValue + dist - ref, diam, diam);
+            BasicStroke basicStroke
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+            if (tcpaValue < 27) {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape8, basicStroke, Color.BLUE, Color.BLUE));
+            } else {
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape8, basicStroke, Color.GRAY, Color.GRAY));
+            }
         }
     }
 
