@@ -8,6 +8,7 @@ import de.jade.ecs.map.shipchart.TssArea;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.TextAnnotation;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYShapeAnnotation;
@@ -30,6 +31,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     private static List<ConflictShips> shipsPairInConflict = new ArrayList<>();
     XYPlot xyPlot;
     XYTextAnnotation textAnnotation;
+    XYTextAnnotation textAnnotation1;
+    XYTextAnnotation textAnnotation2;
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -241,6 +245,27 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
          /*   xyPlot.addAnnotation(textAnnotation);*/
             xyPlot.addAnnotation(xyLineAnnotation1);
             xyPlot.addAnnotation(xyLineAnnotation2);
+
+
+
+            double t1 = (xyCoordinatesEnds1[0]-xValueLine2) * (yValueLine2-xValueLine2)+(xyCoordinatesEnds1[1]-yValueLine2)*(xyCoordinatesEnds2[1]-yValueLine2)
+                    /(xyCoordinatesEnds2[0]-xValueLine2)*(xyCoordinatesEnds2[0]-xValueLine2)+(xyCoordinatesEnds2[1]-yValueLine2) * (xyCoordinatesEnds2[1]-yValueLine2);
+
+            double t2 = (xyCoordinatesEnds2[0]-xValueLine1) * (yValueLine1-xValueLine1)+(xyCoordinatesEnds2[1]-yValueLine1)*(xyCoordinatesEnds1[1]-yValueLine1)
+                    /(xyCoordinatesEnds1[0]-xValueLine1)*(xyCoordinatesEnds1[0]-xValueLine1)+(xyCoordinatesEnds1[1]-yValueLine1) * (xyCoordinatesEnds1[1]-yValueLine1);
+
+
+            if (t2 < 1 && t2 > 0) {
+                textAnnotation2 = new XYTextAnnotation("BWC", xyCoordinatesEnds2[0] + 0.2, xyCoordinatesEnds2[1] - 0.1);
+                textAnnotation2.setFont(new Font("Tahoma", Font.BOLD, 10));
+                xyPlot.addAnnotation(textAnnotation2);
+            }
+
+            if (t1 < 1 && t1 > 0) {
+                textAnnotation1 = new XYTextAnnotation("BWC", xyCoordinatesEnds1[0] + 0.2, xyCoordinatesEnds1[1] - 0.1);
+                textAnnotation1.setFont(new Font("Tahoma", Font.BOLD, 10));
+                xyPlot.addAnnotation(textAnnotation1);
+            }
 
 
             XYLineAnnotation xyLineAnnotationTurnA = null;
