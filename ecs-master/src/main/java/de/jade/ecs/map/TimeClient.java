@@ -99,15 +99,19 @@ public class TimeClient implements Runnable {
 					}
 					if (i == 10) {
 						ShipAis shipAis2
-								= new ShipAis(22222222, 53.96585, 7.624865, 138, 10, "HAMBURG");
+								= new ShipAis(22222222, 53.96585, 7.624865, 136, 10, "HAMBURG");
+					}
+					if (i == 15) {
+						ShipAis shipAis3
+								= new ShipAis(33333333, 53.91741, 7.545902, 74, 14, "HAMBURG");
+					}
+					if (i == 20) {
+						ShipAis shipAis4
+								= new ShipAis(44444444, 53.96585, 7.615865, 146, 10, "WILHELMSHAVEN");
 					}
 					i++;
 
-				} catch (SentenceException e) {
-					e.printStackTrace();
-				} catch (AisMessageException e) {
-					e.printStackTrace();
-				} catch (SixbitException e) {
+				} catch (SentenceException | AisMessageException | SixbitException e) {
 					e.printStackTrace();
 				}
 

@@ -12,10 +12,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
-
 import de.jade.ecs.map.grapchic.MyClass;
 import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.ShipPainter;
@@ -31,8 +29,6 @@ import org.jxmapviewer.viewer.WaypointPainter;
 import org.jxmapviewer.viewer.wms.WMSTileFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-
-
 import de.jade.ecs.util.WMSServiceImagePNG;
 import render.ChartContext;
 import s57.S57map;

@@ -4,13 +4,10 @@ import de.jade.ecs.map.geochart.AlterationsOfCourse;
 import de.jade.ecs.map.geochart.DestinationsToEast;
 import de.jade.ecs.map.geochart.DestinationsToSouth;
 import de.jade.ecs.map.geochart.GeoTssAreas;
-import de.jade.ecs.map.shipchart.TssArea;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.TextAnnotation;
 import org.jfree.chart.annotations.XYLineAnnotation;
-import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.annotations.XYShapeAnnotation;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.NumberAxis;
@@ -18,23 +15,20 @@ import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.util.ShapeUtilities;
-import org.jxmapviewer.viewer.GeoPosition;
+import org.locationtech.jts.math.Vector2D;
 import org.opengis.geometry.DirectPosition;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
@@ -171,6 +165,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             if (hdg == 90) {
                 yValueEnd = yCpaLocation;
             } else if (hdg < 90) {
+                angle = 180 - hdg;
                 double correction = (2.6 - xCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
                 yValueEnd = yCpaLocation - correction;
             } else if (hdg > 90) {
@@ -212,96 +207,127 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         double xValue = 0;
         double yValue = 0;
         for (ConflictShips shipsPair : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
-            shipsPairInConflict.add(shipsPair);
-            double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
-            xValue = xyCoordinates[0];
-            yValue = xyCoordinates[1];
+            //conflicts indication filtering by cpa value
+            if (shipsPair.cpaValue < 0.5) {
+                shipsPairInConflict.add(shipsPair);
 
-            System.out.println("shipsConflicts updated");
-            textAnnotation = new XYTextAnnotation(String.valueOf((double) Math.round(shipsPair.cpaValue * 100) / 100),
-                    xValue, yValue);
-            if (shipsPair.tcpaValue < 6.0) {
-                textAnnotation.setPaint(Color.red);
-            } else {
-                textAnnotation.setPaint(Color.white);
+                double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
+                xValue = xyCoordinates[0];
+                yValue = xyCoordinates[1];
+
+                //cpa value in circle
+                System.out.println("shipsConflicts updated");
+                textAnnotation = new XYTextAnnotation(String.valueOf(Math.round(shipsPair.tcpaValue)),
+                        xValue + 0.24, yValue + 0.02);
+                if (shipsPair.tcpaValue < 6) {
+                    textAnnotation.setPaint(Color.red);
+                } else {
+                    textAnnotation.setPaint(Color.black);
+                }
+                textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
+
+
+                //lines of ships` paths
+                double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
+                double xValueLine1 = xyCoordinatesLine1[0];
+                double yValueLine1 = xyCoordinatesLine1[1];
+
+                double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
+                double xValueLine2 = xyCoordinatesLine2[0];
+                double yValueLine2 = xyCoordinatesLine2[1];
+
+                double[] xyCoordinatesEnds1 = getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA, shipsPair.shipA.hdg);
+                double[] xyCoordinatesEnds2 = getXYCoordinatesEnds(xValueLine2, yValueLine2, shipsPair.shipB, shipsPair.shipB.hdg);
+
+                XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1], xValueLine1, yValueLine1, new BasicStroke(2f), Color.white);
+                XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1], xValueLine2, yValueLine2, new BasicStroke(2f), Color.white);
+
+
+                xyPlot.addAnnotation(xyLineAnnotation1);
+                xyPlot.addAnnotation(xyLineAnnotation2);
+
+                //check lines intersection to indicate BowCrossing
+/*                double newPointX = xyCoordinatesEnds1[0] + 7 * Math.sin((shipsPair.shipA.hdg + 14) * Math.PI / 180);
+                double newPointY = xyCoordinatesEnds1[1] + 7 * Math.cos((shipsPair.shipA.hdg + 14) * Math.PI / 180);
+
+                Line2D.Double line1 = new Line2D.Double(new Point2D.Double(xValueLine1, yValueLine1),
+                        new Point2D.Double(newPointX, newPointY));
+                Line2D.Double line2 = new Line2D.Double(new Point2D.Double(xValueLine2, yValueLine2),
+                        new Point2D.Double(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1]));
+                boolean result = line1.intersectsLine(line2);
+
+                if (result) {
+                    textAnnotation2 = new XYTextAnnotation("BWC", xyCoordinatesEnds2[0] + 0.2, xyCoordinatesEnds2[1] - 0.1);
+                    textAnnotation2.setFont(new Font("Tahoma", Font.BOLD, 10));
+                    xyPlot.addAnnotation(textAnnotation2);
+                }
+
+                if (!result) {
+                    textAnnotation1 = new XYTextAnnotation("BWC", xyCoordinatesEnds1[0] + 0.2, xyCoordinatesEnds1[1] - 0.1);
+                    textAnnotation1.setFont(new Font("Tahoma", Font.BOLD, 10));
+                    xyPlot.addAnnotation(textAnnotation1);
+                }*/
+
+                //green and red line to indicate ships port intentions
+                XYLineAnnotation xyLineAnnotationTurnA = null;
+                XYLineAnnotation xyLineAnnotationTurnB = null;
+
+                if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.PORT
+                        && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0] + 0.01, xyCoordinatesEnds1[1], xValueLine1 + 0.01, yValueLine1, new BasicStroke(1f), Color.red);
+                }
+                if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.STARBOARD
+                        && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_EAST) {
+                    xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1] - 0.01, xValueLine1, yValueLine1 - 0.01, new BasicStroke(1f), Color.green);
+                }
+                if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.PORT
+                        && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0] + 0.01, xyCoordinatesEnds2[1], xValueLine2 + 0.01, yValueLine2, new BasicStroke(1f), Color.red);
+                }
+                if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.STARBOARD
+                        && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_EAST) {
+                    xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1] - 0.01, xValueLine2, yValueLine2 - 0.01, new BasicStroke(1f), Color.green);
+                }
+                if (xyLineAnnotationTurnA != null) {
+                    xyPlot.addAnnotation(xyLineAnnotationTurnA);
+                }
+                if (xyLineAnnotationTurnB != null) {
+                    xyPlot.addAnnotation(xyLineAnnotationTurnB);
+                }
+
+                //circle
+
+ /*               Ellipse2D.Double cpaLocationShape = new Ellipse2D.Double(xValue - 0.15, yValue - 0.15, 0.3, 0.3);
+                BasicStroke basicStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape, basicStroke, Color.WHITE, Color.RED));*/
+
+                xyPlot.addAnnotation(textAnnotation);
+
+                drawTcpaSmall(xyPlot, xValue, yValue, shipsPair.tcpaValue);
+
+                Ellipse2D.Double cpaLocationShapeEnd1
+                        = new Ellipse2D.Double(xyCoordinatesLine1[0] - 0.015, xyCoordinatesLine1[1] - 0.015, 0.03, 0.03);
+                BasicStroke basicStroke1
+                        = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShapeEnd1, basicStroke1, Color.BLUE, Color.BLUE));
+
+                Ellipse2D.Double cpaLocationShapeEnd2
+                        = new Ellipse2D.Double(xyCoordinatesLine2[0] - 0.015, xyCoordinatesLine2[1] - 0.015, 0.03, 0.03);
+                BasicStroke basicStroke2
+                        = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShapeEnd2, basicStroke2, Color.BLUE, Color.BLUE));
+
             }
-            textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
-
-
-            double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
-            double xValueLine1 = xyCoordinatesLine1[0];
-            double yValueLine1 = xyCoordinatesLine1[1];
-
-            double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
-            double xValueLine2 = xyCoordinatesLine2[0];
-            double yValueLine2 = xyCoordinatesLine2[1];
-
-            double[] xyCoordinatesEnds1 = getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA, shipsPair.shipA.hdg);
-            double[] xyCoordinatesEnds2 = getXYCoordinatesEnds(xValueLine2, yValueLine2, shipsPair.shipB, shipsPair.shipB.hdg);
-
-            XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1], xValueLine1, yValueLine1, new BasicStroke(2f), Color.white);
-            XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1], xValueLine2, yValueLine2, new BasicStroke(2f), Color.white);
-
-         /*   xyPlot.addAnnotation(textAnnotation);*/
-            xyPlot.addAnnotation(xyLineAnnotation1);
-            xyPlot.addAnnotation(xyLineAnnotation2);
-
-
-
-            double t1 = (xyCoordinatesEnds1[0]-xValueLine2) * (yValueLine2-xValueLine2)+(xyCoordinatesEnds1[1]-yValueLine2)*(xyCoordinatesEnds2[1]-yValueLine2)
-                    /(xyCoordinatesEnds2[0]-xValueLine2)*(xyCoordinatesEnds2[0]-xValueLine2)+(xyCoordinatesEnds2[1]-yValueLine2) * (xyCoordinatesEnds2[1]-yValueLine2);
-
-            double t2 = (xyCoordinatesEnds2[0]-xValueLine1) * (yValueLine1-xValueLine1)+(xyCoordinatesEnds2[1]-yValueLine1)*(xyCoordinatesEnds1[1]-yValueLine1)
-                    /(xyCoordinatesEnds1[0]-xValueLine1)*(xyCoordinatesEnds1[0]-xValueLine1)+(xyCoordinatesEnds1[1]-yValueLine1) * (xyCoordinatesEnds1[1]-yValueLine1);
-
-
-            if (t2 < 1 && t2 > 0) {
-                textAnnotation2 = new XYTextAnnotation("BWC", xyCoordinatesEnds2[0] + 0.2, xyCoordinatesEnds2[1] - 0.1);
-                textAnnotation2.setFont(new Font("Tahoma", Font.BOLD, 10));
-                xyPlot.addAnnotation(textAnnotation2);
-            }
-
-            if (t1 < 1 && t1 > 0) {
-                textAnnotation1 = new XYTextAnnotation("BWC", xyCoordinatesEnds1[0] + 0.2, xyCoordinatesEnds1[1] - 0.1);
-                textAnnotation1.setFont(new Font("Tahoma", Font.BOLD, 10));
-                xyPlot.addAnnotation(textAnnotation1);
-            }
-
-
-            XYLineAnnotation xyLineAnnotationTurnA = null;
-            XYLineAnnotation xyLineAnnotationTurnB = null;
-
-            if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.PORT
-                    && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_SOUTH) {
-                xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0] + 0.01, xyCoordinatesEnds1[1], xValueLine1  + 0.01, yValueLine1, new BasicStroke(1f), Color.red);
-            }
-            if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.STARBOARD
-                    && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_EAST) {
-                xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1]  - 0.01, xValueLine1, yValueLine1  - 0.01, new BasicStroke(1f), Color.green);
-            }
-            if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.PORT
-                    && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_SOUTH) {
-                xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0] + 0.01, xyCoordinatesEnds2[1], xValueLine2  + 0.01, yValueLine2, new BasicStroke(1f), Color.red);
-            }
-            if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.STARBOARD
-                    && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_EAST) {
-                xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1]  - 0.01, xValueLine2, yValueLine2  - 0.01, new BasicStroke(1f), Color.green);
-            }
-            xyPlot.addAnnotation(xyLineAnnotationTurnA);
-            xyPlot.addAnnotation(xyLineAnnotationTurnB);
-
-            /*chartSouth.add(new XYDataItem(xValue, yValue));*/
-
-            Ellipse2D.Double cpaLocationShape = new Ellipse2D.Double(xValue - 0.15, yValue - 0.15, 0.3, 0.3);
-            BasicStroke basicStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
-
-            xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape, basicStroke, Color.WHITE, Color.RED));
-
-            xyPlot.addAnnotation(textAnnotation);
-
-            drawTcpa(xyPlot, xValue, yValue, shipsPair.tcpaValue);
-
         }
+    }
+
+    private void drawTcpaSmall(XYPlot xyPlot, double xValue, double yValue, double tcpaValue) {
+        Ellipse2D.Double cpaLocationShape1
+                = new Ellipse2D.Double(xValue + 0.15, yValue, 0.02, 0.02);
+        BasicStroke basicStroke
+                = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+        xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape1, basicStroke, Color.BLUE, Color.RED));
     }
 
     private void drawTcpa(XYPlot xyPlot, double xValue, double yValue, double tcpaValue) {
@@ -346,7 +372,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     = new Ellipse2D.Double(xValue - ref + dist, yValue - dist - ref, diam, diam);
             BasicStroke basicStroke
                     = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
-            if (tcpaValue < 18) {
+            if (tcpaValue < 15) {
                 xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape4, basicStroke, Color.BLUE, Color.BLUE));
             } else {
                 xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape4, basicStroke, Color.GRAY, Color.GRAY));
