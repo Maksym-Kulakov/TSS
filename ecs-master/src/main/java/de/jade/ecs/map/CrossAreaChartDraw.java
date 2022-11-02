@@ -19,15 +19,12 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.locationtech.jts.math.Vector2D;
 import org.opengis.geometry.DirectPosition;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,25 +37,60 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     private static List<ConflictShips> shipsPairInConflict = new ArrayList<>();
     XYPlot xyPlot;
     XYTextAnnotation textAnnotation;
-    XYTextAnnotation textAnnotation1;
-    XYTextAnnotation textAnnotation2;
 
     public CrossAreaChartDraw(String s) {
         super(s);
-//        update();
         final ChartPanel chartPanel = createChartPanel();
         this.add(chartPanel, BorderLayout.CENTER);
+
         JPanel control = new JPanel();
-        control.add(new JButton(new AbstractAction("Add Conflicts") {
+
+        control.add(new JButton(new AbstractAction("in BWCR psn") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chartSouth.clear();
                 xyPlot.clearAnnotations();
-                update();
             }
         }));
+
+        SpinnerModel spinnerModelCpa = new SpinnerNumberModel(0.5, 0.1, 10, 0.1);
+        JSpinner jSpinnerCpa = new JSpinner(spinnerModelCpa);
+
+        SpinnerModel spinnerModelTcpa = new SpinnerNumberModel(10, 0.1, 30, 1);
+        JSpinner jSpinnerTcpa = new JSpinner(spinnerModelTcpa);
+
+        control.add(new JButton(new AbstractAction("in CPA psn") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chartSouth.clear();
+                xyPlot.clearAnnotations();
+
+                Double valueFilterCpa = Double.valueOf(jSpinnerCpa.getValue().toString());
+                Double valueFilterTcpa = Double.valueOf(jSpinnerTcpa.getValue().toString());
+
+                update(valueFilterCpa, valueFilterTcpa);
+            }
+        }));
+
+        JTextArea jTextAreaCpa = new JTextArea("cpa <");
+        control.add(jTextAreaCpa);
+
+        control.add(jSpinnerCpa, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaNm= new JTextArea("nm");
+        control.add(jTextAreaNm);
+
+        JTextArea jTextAreaTcpa = new JTextArea("tcpa <");
+        control.add(jTextAreaTcpa);
+
+        control.add(jSpinnerTcpa, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaMin= new JTextArea("min");
+        control.add(jTextAreaMin);
+
         this.add(control, BorderLayout.SOUTH);
     }
+
 
     private ChartPanel createChartPanel() {
         JFreeChart jfreechart = ChartFactory.createScatterPlot(
@@ -70,18 +102,12 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             public Shape getItemShape(int row, int col) {
                 if (!shipsPairInConflict.isEmpty()) {
                     double cpaValue = shipsPairInConflict.get(shipsPairInConflict.size() - col - 1).cpaValue * 115;
-     /*               if (shipsPairInConflict.get(shipsPairInConflict.size() - col - 1).cpaValue < 0.2) {
-                        return ShapeUtilities.createDiagonalCross(9, 6);
-                    }*/
+
                     Ellipse2D.Double shapeMark
                             = new Ellipse2D.Double(-(float) 0.25 * 115 / 2, -(float) 0.25 * 115 / 2,
                             (float) 0.25 * 115, (float) 0.25 * 115);
 
                     return shapeMark;
- /*                   Ellipse2D.Double shapeMark
-                            = new Ellipse2D.Double(-(float) cpaValue / 2, -(float) cpaValue / 2,
-                            (float) cpaValue, (float) cpaValue);
-                    return shapeMark;*/
                 } else {
                     return super.getItemShape(row, col);
                 }
@@ -89,9 +115,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         });
         XYLineAndShapeRenderer renderer
                 = (XYLineAndShapeRenderer) jfreechart.getXYPlot().getRenderer();
-//        renderer.setDefaultShapesFilled(true);
         renderer.setUseFillPaint(true);
-//        renderer.setDrawOutlines(true);
 
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
         domain.setRange(-2.6, 2.6);
@@ -160,8 +184,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         double yValueEnd = 0;
         hdg = hdg + 14;
         double angle = 0;
- /*       Point2D.Double geoPoint = new Point2D.Double(geoPosition.getLatitude(),
-                geoPosition.getLongitude());*/
+
         if (shipAis.geoTssArea == GeoTssAreas.TO_EAST) {
             xValueEnd = -2.6;
             if (hdg == 90) {
@@ -205,13 +228,13 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         return new double[]{xValueEnd, yValueEnd};
     }
 
-    private void update() {
+    private void update(Double valueCpaLimit, Double valueTCpaLimit) {
         double xValue = 0;
         double yValue = 0;
         Set<DirectPosition> directPositions = new HashSet<>();
         for (ConflictShips shipsPair : CrossAreaChart.shipsConflictsInCrossAreaSouth.values()) {
             //conflicts indication filtering by cpa value
-            if (shipsPair.cpaValue < 0.5) {
+            if (shipsPair.cpaValue < valueCpaLimit && shipsPair.tcpaValue < valueTCpaLimit) {
                 shipsPairInConflict.add(shipsPair);
 
                 double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
@@ -253,27 +276,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 xyPlot.addAnnotation(xyLineAnnotation1);
                 xyPlot.addAnnotation(xyLineAnnotation2);
 
-                //check lines intersection to indicate BowCrossing
-/*                double newPointX = xyCoordinatesEnds1[0] + 7 * Math.sin((shipsPair.shipA.hdg + 14) * Math.PI / 180);
-                double newPointY = xyCoordinatesEnds1[1] + 7 * Math.cos((shipsPair.shipA.hdg + 14) * Math.PI / 180);
-
-                Line2D.Double line1 = new Line2D.Double(new Point2D.Double(xValueLine1, yValueLine1),
-                        new Point2D.Double(newPointX, newPointY));
-                Line2D.Double line2 = new Line2D.Double(new Point2D.Double(xValueLine2, yValueLine2),
-                        new Point2D.Double(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1]));
-                boolean result = line1.intersectsLine(line2);
-
-                if (result) {
-                    textAnnotation2 = new XYTextAnnotation("BWC", xyCoordinatesEnds2[0] + 0.2, xyCoordinatesEnds2[1] - 0.1);
-                    textAnnotation2.setFont(new Font("Tahoma", Font.BOLD, 10));
-                    xyPlot.addAnnotation(textAnnotation2);
-                }
-
-                if (!result) {
-                    textAnnotation1 = new XYTextAnnotation("BWC", xyCoordinatesEnds1[0] + 0.2, xyCoordinatesEnds1[1] - 0.1);
-                    textAnnotation1.setFont(new Font("Tahoma", Font.BOLD, 10));
-                    xyPlot.addAnnotation(textAnnotation1);
-                }*/
 
                 //green and red line to indicate ships port intentions
                 XYLineAnnotation xyLineAnnotationTurnA = null;
@@ -304,26 +306,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                 //circle
 
- /*               Ellipse2D.Double cpaLocationShape = new Ellipse2D.Double(xValue - 0.15, yValue - 0.15, 0.3, 0.3);
-                BasicStroke basicStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
-
-                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape, basicStroke, Color.WHITE, Color.RED));*/
-
                 xyPlot.addAnnotation(textAnnotation);
 
                 drawTcpaSmall(xyPlot, xValue, yValue, shipsPair.tcpaValue);
-
-/*                Ellipse2D.Double cpaLocationShapeEnd1
-                        = new Ellipse2D.Double(xyCoordinatesLine1[0] - 0.015, xyCoordinatesLine1[1] - 0.015, 0.03, 0.03);
-                BasicStroke basicStroke1
-                        = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
-                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShapeEnd1, basicStroke1, Color.BLUE, Color.BLUE));
-
-                Ellipse2D.Double cpaLocationShapeEnd2
-                        = new Ellipse2D.Double(xyCoordinatesLine2[0] - 0.015, xyCoordinatesLine2[1] - 0.015, 0.03, 0.03);
-                BasicStroke basicStroke2
-                        = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
-                xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShapeEnd2, basicStroke2, Color.BLUE, Color.BLUE));*/
 
             }
             for (DirectPosition directPosition : directPositions) {

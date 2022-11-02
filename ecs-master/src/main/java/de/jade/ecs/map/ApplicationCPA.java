@@ -71,8 +71,6 @@ public class ApplicationCPA implements Runnable {
 		double cpaTime = Track.cpaTime(track1, track2);
 		double cpaTimeMin = cpaTime / 60;
 
-		System.out.print("TCPA: " + cpaTime + ", ");
-
 		/** calc CPA-P1 **/
 		geoCalc.setStartGeographicPoint(position1.getX(), position1.getY());
 		if (Math.signum(cpaTime) == -1) {
@@ -106,10 +104,10 @@ public class ApplicationCPA implements Runnable {
 		geoCalc.setGeodesicDistance(cpaDistance/2);
 		DirectPosition cpaCenterPsn = geoCalc.getEndPoint();
 
-		System.out.println("DCPA: " + cpaDistance + " | HeadingA: "
+/*		System.out.println("DCPA: " + cpaDistance + " | HeadingA: "
 				+ shipStateA.getHeading_current_deg() + " | HeadingB: "
 				+ shipStateB.getHeading_current_deg()
-				+ " | cpaCenter: " + cpaCenterPsn);
+				+ " | cpaCenter: " + cpaCenterPsn);*/
 
 		Integer key = new PairHash(shipAis.getMmsi(), shipAIS2.getMmsi()).hashCode();
 		ConflictShips conflictShips
