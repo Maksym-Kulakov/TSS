@@ -95,11 +95,11 @@ public class TimeClient implements Runnable {
 					//for test only
 					if (i == 1) {
 						ShipAis shipAis1
-								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14, "WILHELMSHAVEN");
+								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14, "HAMBURG");
 					}
 					if (i == 10) {
 						ShipAis shipAis2
-								= new ShipAis(22222222, 53.96585, 7.624865, 136, 10, "HAMBURG");
+								= new ShipAis(22222222, 53.96585, 7.624865, 136, 10, "WILHELMSHAVEN");
 					}
 					if (i == 15) {
 						ShipAis shipAis4

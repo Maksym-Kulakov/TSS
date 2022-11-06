@@ -3,6 +3,7 @@ package de.jade.ecs.map;
 import de.jade.ecs.map.shipchart.PairHash;
 import org.apache.sis.referencing.CommonCRS;
 import org.apache.sis.referencing.GeodeticCalculator;
+import org.locationtech.jts.math.Vector2D;
 import org.opengis.geometry.DirectPosition;
 import org.scheduler.agent.state.ShipState;
 import java.awt.geom.Point2D;
