@@ -4,6 +4,8 @@ import de.jade.ecs.map.geochart.AlterationsOfCourse;
 import de.jade.ecs.map.geochart.DestinationsToEast;
 import de.jade.ecs.map.geochart.DestinationsToSouth;
 import de.jade.ecs.map.geochart.GeoTssAreas;
+import de.jade.ecs.map.shipchart.TssArea;
+import org.apache.sis.geometry.DirectPosition2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -359,7 +361,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 }
                 textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
 
-
                 //lines of ships` paths
                 double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
                 double xValueLine1 = xyCoordinatesLine1[0];
@@ -454,10 +455,50 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                 xyPlot.addAnnotation(new XYShapeAnnotation(crossPoint, basicStrokeCrossPoint, Color.BLUE, Color.BLUE));*/
 
+                //check if vessel in cross area
+                boolean insideAreaShipA = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipA.geoPosition.getLatitude(),
+                        shipsPair.shipA.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
 
-                XYLineAnnotation xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1], xValueLine1, yValueLine1, new BasicStroke(2f), Color.white);
-                XYLineAnnotation xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1], xValueLine2, yValueLine2, new BasicStroke(2f), Color.white);
+                boolean insideAreaShipB = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipB.geoPosition.getLatitude(),
+                        shipsPair.shipB.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
 
+                XYLineAnnotation xyLineAnnotation1;
+                if (insideAreaShipA) {
+                    double[] xyCoordinatesInCross1 =
+                            getXYCoordinates(new DirectPosition2D(shipsPair.shipA.geoPosition.getLatitude(),
+                                    shipsPair.shipA.geoPosition.getLongitude()));
+
+                    xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesInCross1[0], xyCoordinatesInCross1[1],
+                            xValueLine1, yValueLine1, new BasicStroke(2f), Color.white);
+
+                    Ellipse2D.Double shipLocationInCross1
+                            = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
+                    BasicStroke basicStroke1
+                            = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                    xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
+                } else {
+                    xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
+                                    xValueLine1, yValueLine1, new BasicStroke(2f), Color.white);
+                }
+
+                XYLineAnnotation xyLineAnnotation2;
+                if (insideAreaShipB) {
+                    double[] xyCoordinatesInCross2 =
+                            getXYCoordinates(new DirectPosition2D(shipsPair.shipB.geoPosition.getLatitude(),
+                                    shipsPair.shipB.geoPosition.getLongitude()));
+
+                    xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesInCross2[0], xyCoordinatesInCross2[1],
+                            xValueLine2, yValueLine2, new BasicStroke(2f), Color.white);
+
+                    Ellipse2D.Double shipLocationInCross2
+                            = new Ellipse2D.Double(xyCoordinatesInCross2[0] - 0.025, xyCoordinatesInCross2[1] - 0.025, 0.05, 0.05);
+                    BasicStroke basicStroke2
+                            = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                    xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
+                } else {
+                    xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
+                                    xValueLine2, yValueLine2, new BasicStroke(2f), Color.white);
+                }
 
                 xyPlot.addAnnotation(xyLineAnnotation1);
                 xyPlot.addAnnotation(xyLineAnnotation2);

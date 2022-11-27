@@ -53,6 +53,10 @@ public class ShipAis implements ShipInter {
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
             shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_EAST;
+            return;
+        }
+        if (shipsInsideAreaToEastAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
@@ -61,6 +65,10 @@ public class ShipAis implements ShipInter {
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToSouth)) {
             shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_SOUTH;
+            return;
+        }
+        if (shipsInsideAreaToSouthAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
@@ -69,6 +77,10 @@ public class ShipAis implements ShipInter {
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToNorth)) {
             shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_NORTH;
+            return;
+        }
+        if (shipsInsideAreaToNorthAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
