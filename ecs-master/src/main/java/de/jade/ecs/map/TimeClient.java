@@ -1,5 +1,6 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.xychart.DynamicSimulation;
 import dk.dma.ais.binary.SixbitException;
 import dk.dma.ais.message.AisMessage;
 import dk.dma.ais.message.AisMessage1;
@@ -27,6 +28,7 @@ public class TimeClient implements Runnable {
 	double hdg;
 	double speed;
 	ChartViewer chartViewer;
+	public static int inner = 0;
 
 	public TimeClient(ChartViewer chartViewer) {
 		this.chartViewer = chartViewer;
@@ -92,16 +94,29 @@ public class TimeClient implements Runnable {
 					}
 
 
+
 					//for test only
-					if (i == 1) {
-						ShipAis shipAis1
-								= new ShipAis(11111111, 53.89741, 7.545902, 76, 14, "WILHELMSHAVEN");
-					}
-					if (i == 10) {
-						ShipAis shipAis2
-								= new ShipAis(22222222, 53.96585, 7.624865, 136, 10, "HAMBURG");
-					}
-					if (i == 15) {
+				 		if (!DynamicSimulation.shipStatements.isEmpty()
+								&& DynamicSimulation.count > inner) {
+							ShipAis shipAis1
+									= new ShipAis(11111111,
+									DynamicSimulation.shipStatements.get(11111111).getPoint().getY(),
+									DynamicSimulation.shipStatements.get(11111111).getPoint().getX(),
+									76,
+									14, "WILHELMSHAVEN");
+
+							ShipAis shipAis2
+									= new ShipAis(22222222,
+									DynamicSimulation.shipStatements.get(22222222).getPoint().getY(),
+									DynamicSimulation.shipStatements.get(22222222).getPoint().getX(),
+									136, 10,
+									"HAMBURG");
+							inner++;
+						}
+
+
+
+/*					if (i == 15) {
 						ShipAis shipAis4
 								= new ShipAis(44444444, 53.96585, 7.615865, 146, 10, "HAMBURG");
 					}
@@ -117,7 +132,7 @@ public class TimeClient implements Runnable {
 						ShipAis shipAis5
 								= new ShipAis(55555555, 53.92841, 7.545902, 77, 18, "HAMBURG");
 					}
-					i++;
+					i++;*/
 
 				} catch (SentenceException | AisMessageException | SixbitException e) {
 					e.printStackTrace();

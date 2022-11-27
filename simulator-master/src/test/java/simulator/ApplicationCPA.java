@@ -2,7 +2,6 @@ package simulator;
 
 import java.awt.geom.Point2D;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.sis.referencing.CommonCRS;
 import org.apache.sis.referencing.GeodeticCalculator;
 import org.opengis.geometry.DirectPosition;

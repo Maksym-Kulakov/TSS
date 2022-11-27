@@ -349,7 +349,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 yValue = xyCoordinates[1];
 
                 //cpa value in circle
-                System.out.println("shipsConflicts updated");
+           /*     System.out.println("shipsConflicts updated");*/
                 textAnnotation = new XYTextAnnotation(String.valueOf(Math.round(shipsPair.tcpaValue)),
                         xValue + 0.24, yValue + 0.02);
                 if (shipsPair.tcpaValue < 6) {

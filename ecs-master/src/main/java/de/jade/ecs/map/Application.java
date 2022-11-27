@@ -1,5 +1,7 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.xychart.DynamicSimulation;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -8,11 +10,13 @@ public class Application {
 		try {
 			ChartViewer chartViewer = new ChartViewer();
 			chartViewer.show();
-			ExecutorService executor = Executors.newFixedThreadPool(3);
+			ExecutorService executor = Executors.newFixedThreadPool(5);
 			TimeClient aisServerClient = new TimeClient(chartViewer);
 			executor.execute(aisServerClient);
 			ApplicationCPA applicationCPA = new ApplicationCPA();
 			executor.execute(applicationCPA);
+			DynamicSimulation applicationCPADynamic = new DynamicSimulation();
+			executor.execute(applicationCPADynamic);
 			CrossAreaChartDraw crossAreaChartDraw = new CrossAreaChartDraw("crossArea");
 			executor.execute(crossAreaChartDraw);
 

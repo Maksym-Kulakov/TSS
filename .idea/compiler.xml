@@ -12,7 +12,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ecs" target="${maven.compiler.release}" />
+      <module name="ecs" target="11" />
       <module name="s57reader" target="1.8" />
       <module name="simulator" target="1.8" />
     </bytecodeTargetLevel>
