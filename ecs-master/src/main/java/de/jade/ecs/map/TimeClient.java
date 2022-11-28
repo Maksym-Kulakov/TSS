@@ -111,6 +111,13 @@ public class TimeClient implements Runnable {
 									DynamicSimulation.shipStatements.get(22222222).getPoint().getX(),
 									136, 10,
 									"HAMBURG");
+
+							ShipAis shipAis3
+									= new ShipAis(33333333,
+									DynamicSimulation.shipStatements.get(33333333).getPoint().getY(),
+									DynamicSimulation.shipStatements.get(33333333).getPoint().getX(),
+									77, 14,
+									"HAMBURG");
 							inner++;
 						}
 
