@@ -619,6 +619,45 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 }
                 textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
 
+                if (!shipsToSouth.containsKey(shipsPair.shipA.mmsiNum)
+                        && !shipsToNorth.containsKey(shipsPair.shipA.mmsiNum)
+                        && !shipsToEast.containsKey(shipsPair.shipA.mmsiNum)) {
+                    switch (shipsPair.shipA.geoTssArea) {
+                        case TO_SOUTH:
+                            shipsToSouth.put(shipsPair.shipA.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipA));
+                            break;
+                        case TO_NORTH:
+                            shipsToNorth.put(shipsPair.shipA.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipA));
+                            break;
+                        case TO_EAST:
+                            shipsToEast.put(shipsPair.shipA.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipA));
+                            break;
+                    }
+                }
+
+
+                if (!shipsToSouth.containsKey(shipsPair.shipB.mmsiNum)
+                        && !shipsToNorth.containsKey(shipsPair.shipB.mmsiNum)
+                        && !shipsToEast.containsKey(shipsPair.shipB.mmsiNum)) {
+                    switch (shipsPair.shipB.geoTssArea) {
+                        case TO_SOUTH:
+                            shipsToSouth.put(shipsPair.shipB.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipB));
+                            break;
+                        case TO_NORTH:
+                            shipsToNorth.put(shipsPair.shipB.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipB));
+                            break;
+                        case TO_EAST:
+                            shipsToEast.put(shipsPair.shipB.mmsiNum, findIntentionOfCourseAlteration(shipsPair.shipB));
+                            break;
+                    }
+                }
+
+                boolean insideAreaShipA = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipA.geoPosition.getLatitude(),
+                        shipsPair.shipA.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
+
+                boolean insideAreaShipB = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipB.geoPosition.getLatitude(),
+                        shipsPair.shipB.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
+
 
                 //lines of ships` paths
                 double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
@@ -690,6 +729,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     checkIfPointInSegment = true;
                 }
 
+
                 if (checkIfPointInSegment) {
                     double distFmBcrToEnd1 = Math.sqrt((yValueLine1 - crossPoint.getY()) * (yValueLine1 - crossPoint.getY())
                         + (xValueLine1 - crossPoint.getX()) * (xValueLine1 - crossPoint.getX()));
@@ -700,12 +740,45 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                     double[] otherBwrPoint = getProlongedPointCoordinates(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1], shipsPair.shipB, shipsPair.shipB.hdg, distOfLine2 - distFmBcrToEnd2);
 
-                    xyLineAnnotation1
-                            = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
-                            crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
-                    xyLineAnnotation2
-                            = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
-                            otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
+                    if (insideAreaShipA) {
+                        double[] xyCoordinatesInCross1 =
+                                getXYCoordinates(new DirectPosition2D(shipsPair.shipA.geoPosition.getLatitude(),
+                                        shipsPair.shipA.geoPosition.getLongitude()));
+
+                        xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesInCross1[0], xyCoordinatesInCross1[1],
+                                crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
+
+                        Ellipse2D.Double shipLocationInCross1
+                                = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
+                        BasicStroke basicStroke1
+                                = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                        xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
+                        xyCoordinatesEnds1 = xyCoordinatesInCross1;
+                    } else {
+                        xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
+                                crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
+                    }
+
+
+                    if (insideAreaShipB) {
+                        double[] xyCoordinatesInCross2 =
+                                getXYCoordinates(new DirectPosition2D(shipsPair.shipB.geoPosition.getLatitude(),
+                                        shipsPair.shipB.geoPosition.getLongitude()));
+
+                        xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesInCross2[0], xyCoordinatesInCross2[1],
+                                otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
+
+                        Ellipse2D.Double shipLocationInCross2
+                                = new Ellipse2D.Double(xyCoordinatesInCross2[0] - 0.025, xyCoordinatesInCross2[1] - 0.025, 0.05, 0.05);
+                        BasicStroke basicStroke2
+                                = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                        xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
+                        xyCoordinatesEnds2 = xyCoordinatesInCross2;
+                    } else {
+                        xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
+                                otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
+                    }
+
 
                     directPositions.add(crossPoint);
                     directPositions.add(new Point2D.Double(otherBwrPoint[0], otherBwrPoint[1]));
@@ -714,20 +787,20 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     XYLineAnnotation xyLineAnnotationTurnA = null;
                     XYLineAnnotation xyLineAnnotationTurnB = null;
 
-                    if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.PORT
-                            && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    if (shipsToSouth.containsKey(shipsPair.shipA.mmsiNum) && shipsToSouth.get(shipsPair.shipA.mmsiNum)
+                            == AlterationsOfCourse.PORT) {
                         xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0] + 0.01, xyCoordinatesEnds1[1], crossPoint.getX() + 0.01, crossPoint.getY(), new BasicStroke(1f), Color.red);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.STARBOARD
-                            && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_EAST) {
+                    if (shipsToEast.containsKey(shipsPair.shipA.mmsiNum) && shipsToEast.get(shipsPair.shipA.mmsiNum)
+                            == AlterationsOfCourse.STARBOARD) {
                         xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1] - 0.01, crossPoint.getX(), crossPoint.getY() - 0.01, new BasicStroke(1f), Color.green);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.PORT
-                            && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    if (shipsToSouth.containsKey(shipsPair.shipB.mmsiNum) && shipsToSouth.get(shipsPair.shipB.mmsiNum)
+                            == AlterationsOfCourse.PORT) {
                         xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0] + 0.01, xyCoordinatesEnds2[1], otherBwrPoint[0] + 0.01, otherBwrPoint[1], new BasicStroke(1f), Color.red);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.STARBOARD
-                            && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_EAST) {
+                    if (shipsToEast.containsKey(shipsPair.shipB.mmsiNum) && shipsToEast.get(shipsPair.shipB.mmsiNum)
+                            == AlterationsOfCourse.STARBOARD) {
                         xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1] - 0.01, otherBwrPoint[0], otherBwrPoint[1] - 0.01, new BasicStroke(1f), Color.green);
                     }
                     if (xyLineAnnotationTurnA != null) {
@@ -746,12 +819,47 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                     double[] otherBwrPoint = getProlongedPointCoordinates(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1], shipsPair.shipA, shipsPair.shipA.hdg, distOfLine1 - distFmBcrToEnd1);
 
-                    xyLineAnnotation1
-                            = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
-                            otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
-                    xyLineAnnotation2
-                            = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
-                            crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
+
+                    if (insideAreaShipA) {
+                        double[] xyCoordinatesInCross1 =
+                                getXYCoordinates(new DirectPosition2D(shipsPair.shipA.geoPosition.getLatitude(),
+                                        shipsPair.shipA.geoPosition.getLongitude()));
+
+                        xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesInCross1[0], xyCoordinatesInCross1[1],
+                                otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
+
+                        Ellipse2D.Double shipLocationInCross1
+                                = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
+                        BasicStroke basicStroke1
+                                = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                        xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
+                        xyCoordinatesEnds1 = xyCoordinatesInCross1;
+                    } else {
+                        xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
+                                otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
+                    }
+
+
+                    if (insideAreaShipB) {
+                        double[] xyCoordinatesInCross2 =
+                                getXYCoordinates(new DirectPosition2D(shipsPair.shipB.geoPosition.getLatitude(),
+                                        shipsPair.shipB.geoPosition.getLongitude()));
+
+                        xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesInCross2[0], xyCoordinatesInCross2[1],
+                                crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
+
+                        Ellipse2D.Double shipLocationInCross2
+                                = new Ellipse2D.Double(xyCoordinatesInCross2[0] - 0.025, xyCoordinatesInCross2[1] - 0.025, 0.05, 0.05);
+                        BasicStroke basicStroke2
+                                = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                        xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
+                        xyCoordinatesEnds2 = xyCoordinatesInCross2;
+                    } else {
+                        xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
+                                crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
+                    }
+
+
 
                     directPositions.add(crossPoint);
                     directPositions.add(new Point2D.Double(otherBwrPoint[0], otherBwrPoint[1]));
@@ -760,20 +868,20 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     XYLineAnnotation xyLineAnnotationTurnA = null;
                     XYLineAnnotation xyLineAnnotationTurnB = null;
 
-                    if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.PORT
-                            && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    if (shipsToSouth.containsKey(shipsPair.shipA.mmsiNum) && shipsToSouth.get(shipsPair.shipA.mmsiNum)
+                            == AlterationsOfCourse.PORT) {
                         xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0] + 0.01, xyCoordinatesEnds1[1], otherBwrPoint[0] + 0.01, otherBwrPoint[1], new BasicStroke(1f), Color.red);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipA) == AlterationsOfCourse.STARBOARD
-                            && shipsPair.shipA.geoTssArea == GeoTssAreas.TO_EAST) {
+                    if (shipsToEast.containsKey(shipsPair.shipA.mmsiNum) && shipsToEast.get(shipsPair.shipA.mmsiNum)
+                            == AlterationsOfCourse.STARBOARD) {
                         xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1] - 0.01, otherBwrPoint[0], otherBwrPoint[1] - 0.01, new BasicStroke(1f), Color.green);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.PORT
-                            && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_SOUTH) {
+                    if (shipsToSouth.containsKey(shipsPair.shipB.mmsiNum) && shipsToSouth.get(shipsPair.shipB.mmsiNum)
+                            == AlterationsOfCourse.PORT) {
                         xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0] + 0.01, xyCoordinatesEnds2[1], crossPoint.getX() + 0.01, crossPoint.getY(), new BasicStroke(1f), Color.red);
                     }
-                    if (findIntentionOfCourseAlteration(shipsPair.shipB) == AlterationsOfCourse.STARBOARD
-                            && shipsPair.shipB.geoTssArea == GeoTssAreas.TO_EAST) {
+                    if (shipsToEast.containsKey(shipsPair.shipB.mmsiNum) && shipsToEast.get(shipsPair.shipB.mmsiNum)
+                            == AlterationsOfCourse.STARBOARD) {
                         xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1] - 0.01, crossPoint.getX(), crossPoint.getY() - 0.01, new BasicStroke(1f), Color.green);
                     }
                     if (xyLineAnnotationTurnA != null) {
