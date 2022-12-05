@@ -42,6 +42,11 @@ public class DynamicSimulation implements Runnable {
 		Agent agentC = new Agent(scheduler, new LinearDrivingBehaviour(shipStateC), new NmeaPosReportUdpOutputBehaviour(shipStateC, 2948));
 		scheduler.registerAgent(agentC);
 
+		/** Ship d **/
+		ShipState shipStateD = new ShipState(44444444, new Point2D.Double(7.756226, 53.9049), 328, 7);
+		Agent agentD = new Agent(scheduler, new LinearDrivingBehaviour(shipStateD), new NmeaPosReportUdpOutputBehaviour(shipStateD, 2948));
+		scheduler.registerAgent(agentD);
+
 		scheduler.start();
 
 
@@ -50,6 +55,7 @@ public class DynamicSimulation implements Runnable {
 				shipStatements.put(shipStateA.getMMSI(), shipStateA);
 				shipStatements.put(shipStateB.getMMSI(), shipStateB);
 				shipStatements.put(shipStateC.getMMSI(), shipStateC);
+				shipStatements.put(shipStateD.getMMSI(), shipStateD);
 				TimeUnit.SECONDS.sleep(10);
 				count++;
 			} catch (InterruptedException e) {

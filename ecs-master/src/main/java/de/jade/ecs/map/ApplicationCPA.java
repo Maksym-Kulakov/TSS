@@ -41,7 +41,7 @@ public class ApplicationCPA implements Runnable {
 		});
 	}
 
-	private void doConflictSituations(ShipAis shipAis, ShipAis shipAIS2) {
+	public void doConflictSituations(ShipAis shipAis, ShipAis shipAIS2) {
 		ShipState shipStateA = new ShipState(shipAis.getMmsi(),
 				new Point2D.Double(shipAis.latitude, shipAis.longitude), shipAis.hdg, shipAis.speed); //8, 54 // 8.16, 54
 		ShipState shipStateB = new ShipState(shipAIS2.getMmsi(),

@@ -102,22 +102,33 @@ public class TimeClient implements Runnable {
 									= new ShipAis(11111111,
 									DynamicSimulation.shipStatements.get(11111111).getPoint().getY(),
 									DynamicSimulation.shipStatements.get(11111111).getPoint().getX(),
-									76,
-									14, "WILHELMSHAVEN");
+									DynamicSimulation.shipStatements.get(11111111).getHeading_commanded_deg(),
+									DynamicSimulation.shipStatements.get(11111111).getSpeed_commanded_kn(),
+									"WILHELMSHAVEN");
 
 							ShipAis shipAis2
 									= new ShipAis(22222222,
 									DynamicSimulation.shipStatements.get(22222222).getPoint().getY(),
 									DynamicSimulation.shipStatements.get(22222222).getPoint().getX(),
-									136, 10,
+									DynamicSimulation.shipStatements.get(22222222).getHeading_commanded_deg(),
+									DynamicSimulation.shipStatements.get(22222222).getSpeed_commanded_kn(),
 									"HAMBURG");
 
 							ShipAis shipAis3
 									= new ShipAis(33333333,
 									DynamicSimulation.shipStatements.get(33333333).getPoint().getY(),
 									DynamicSimulation.shipStatements.get(33333333).getPoint().getX(),
-									77, 14,
+									DynamicSimulation.shipStatements.get(33333333).getHeading_commanded_deg(),
+									DynamicSimulation.shipStatements.get(33333333).getSpeed_commanded_kn(),
 									"HAMBURG");
+							inner++;
+							ShipAis shipAis4
+									= new ShipAis(44444444,
+									DynamicSimulation.shipStatements.get(44444444).getPoint().getY(),
+									DynamicSimulation.shipStatements.get(44444444).getPoint().getX(),
+									DynamicSimulation.shipStatements.get(44444444).getHeading_commanded_deg(),
+									DynamicSimulation.shipStatements.get(44444444).getSpeed_commanded_kn(),
+									"OTHER");
 							inner++;
 						}
 

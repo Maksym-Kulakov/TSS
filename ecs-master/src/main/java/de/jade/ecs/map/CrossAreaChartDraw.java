@@ -4,8 +4,9 @@ import de.jade.ecs.map.geochart.AlterationsOfCourse;
 import de.jade.ecs.map.geochart.DestinationsToEast;
 import de.jade.ecs.map.geochart.DestinationsToSouth;
 import de.jade.ecs.map.geochart.GeoTssAreas;
-import de.jade.ecs.map.shipchart.TssArea;
+import de.jade.ecs.map.shipchart.PairHash;
 import org.apache.sis.geometry.DirectPosition2D;
+import org.apache.sis.referencing.GeodeticCalculator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,6 +24,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.opengis.geometry.DirectPosition;
+import org.scheduler.agent.state.ShipState;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -41,7 +44,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public static Point2D.Double centerPoint = new Point2D.Double(53.93652, 7.696533);
     private static final String title = "South Cross Area";
     private XYSeries chartSouth = new XYSeries("Conflict Ships");
-    private static List<ConflictShips> shipsPairInConflict = new ArrayList<>();
+    public static List<ConflictShips> shipsPairInConflict = new ArrayList<>();
 
     private static Map<Integer, AlterationsOfCourse> shipsToSouth = new HashMap<>();
     private static Map<Integer, AlterationsOfCourse> shipsToEast = new HashMap<>();
@@ -53,6 +56,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     XYTextAnnotation textAnnotation;
     Set<Point2D.Double> directPositions;
     List<XYAnnotation> xyAnnotationList;
+    List<XYAnnotation> trialXyAnnotationList;
     int account = 0;
 
     public CrossAreaChartDraw(String s) {
@@ -60,15 +64,35 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         final ChartPanel chartPanel = createChartPanel();
         this.add(chartPanel, BorderLayout.CENTER);
 
-        JPanel control = new JPanel();
+        JPanel controlNorth = new JPanel();
+        JPanel controlSouth = new JPanel();
 
-        SpinnerModel spinnerModelCpa = new SpinnerNumberModel(0.5, 0.1, 10, 0.1);
+        SpinnerModel spinnerModelCpa = new SpinnerNumberModel(1, 0.1, 10, 0.1);
         JSpinner jSpinnerCpa = new JSpinner(spinnerModelCpa);
 
-        SpinnerModel spinnerModelTcpa = new SpinnerNumberModel(10, 0.1, 30, 1);
+        SpinnerModel spinnerModelTcpa = new SpinnerNumberModel(30, 0.1, 30, 1);
         JSpinner jSpinnerTcpa = new JSpinner(spinnerModelTcpa);
 
-        control.add(new JButton(new AbstractAction("in BWCR psn") {
+        SpinnerModel spinnerModelShip = new SpinnerNumberModel(1, 1, 3, 1);
+        JSpinner jSpinnerShip = new JSpinner(spinnerModelShip);
+
+        SpinnerModel spinnerModelShipHdg = new SpinnerNumberModel(0, 0, 359, 1);
+        JSpinner jSpinnerShipHdg = new JSpinner(spinnerModelShipHdg);
+
+        SpinnerModel spinnerModelShipSpeed = new SpinnerNumberModel(10, 0.1, 30, 1);
+        JSpinner jSpinnerShipSpeed = new JSpinner(spinnerModelShipSpeed);
+
+        SpinnerModel spinnerModelTrial = new SpinnerListModel(Manoueveres.values());
+        JSpinner jSpinnerShipTrial = new JSpinner(spinnerModelTrial);
+
+        SpinnerModel spinnerModelAllowCpa = new SpinnerNumberModel(0.4, 0.1, 1, 0.1);
+        JSpinner jSpinnerShipAllowCpa = new JSpinner(spinnerModelAllowCpa);
+
+
+
+
+
+        controlNorth.add(new JButton(new AbstractAction("in BWCR psn") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chartSouth.clear();
@@ -82,7 +106,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             }
         }));
 
-        control.add(new JButton(new AbstractAction("in CPA psn") {
+        controlNorth.add(new JButton(new AbstractAction("in CPA psn") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chartSouth.clear();
@@ -98,7 +122,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
 
 
-        control.add(new JButton(new AbstractAction("pair") {
+        controlNorth.add(new JButton(new AbstractAction("pair") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 xyAnnotationList = highLightPair();
@@ -114,23 +138,69 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             }
         }));
 
-        JTextArea jTextAreaCpa = new JTextArea("cpa <");
-        control.add(jTextAreaCpa);
+        controlSouth.add(new JButton(new AbstractAction("SafeCpa") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            /*    for (XYAnnotation xyAnnotation : trialXyAnnotationList) {
+                    xyPlot.removeAnnotation(xyAnnotation);
+                }*/
+                String valueOfManoeuver = jSpinnerShipTrial.getValue().toString();
+                double valueFilterCpa = Double.parseDouble(jSpinnerShipAllowCpa.getValue().toString());
+                getSafeCpa(valueOfManoeuver, valueFilterCpa);
+                updateTrial();
+            }
+        }));
 
-        control.add(jSpinnerCpa, BorderLayout.SOUTH);
+        JTextArea jTextAreaCpa = new JTextArea("cpa <");
+        controlNorth.add(jTextAreaCpa);
+
+        controlNorth.add(jSpinnerCpa, BorderLayout.SOUTH);
 
         JTextArea jTextAreaNm= new JTextArea("nm");
-        control.add(jTextAreaNm);
+        controlNorth.add(jTextAreaNm);
 
         JTextArea jTextAreaTcpa = new JTextArea("tcpa <");
-        control.add(jTextAreaTcpa);
+        controlNorth.add(jTextAreaTcpa);
 
-        control.add(jSpinnerTcpa, BorderLayout.SOUTH);
+        controlNorth.add(jSpinnerTcpa, BorderLayout.SOUTH);
 
         JTextArea jTextAreaMin= new JTextArea("min");
-        control.add(jTextAreaMin);
+        controlNorth.add(jTextAreaMin);
 
-        this.add(control, BorderLayout.SOUTH);
+        this.add(controlNorth, BorderLayout.NORTH);
+
+        JTextArea jTextAreaTrial= new JTextArea("Trial");
+        controlSouth.add(jTextAreaTrial);
+
+        controlSouth.add(jSpinnerShipTrial, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaAllowCpa= new JTextArea("minCPA");
+        controlSouth.add(jTextAreaAllowCpa);
+
+        controlSouth.add(jSpinnerShipAllowCpa, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShip= new JTextArea("Ship №:");
+        controlSouth.add(jTextAreaShip);
+
+        controlSouth.add(jSpinnerShip, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShipHdg= new JTextArea("HDG:");
+        controlSouth.add(jTextAreaShipHdg);
+
+        controlSouth.add(jSpinnerShipHdg, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShipDegr= new JTextArea("degr");
+        controlSouth.add(jTextAreaShipDegr);
+
+        JTextArea jTextAreaShipSpeed= new JTextArea("SPD:");
+        controlSouth.add(jTextAreaShipSpeed);
+
+        controlSouth.add(jSpinnerShipSpeed, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShipKn= new JTextArea("kn");
+        controlSouth.add(jTextAreaShipKn);
+
+        this.add(controlSouth, BorderLayout.SOUTH);
     }
 
     private List<XYAnnotation> highLightPair() {
@@ -303,7 +373,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         hdg = hdg + 14;
         double angle = 0;
 
-        if (shipAis.geoTssArea == GeoTssAreas.TO_EAST) {
+        if (shipsToEast.containsKey(shipAis.mmsiNum)) {
             xValueEnd = -2.6;
             if (hdg == 90) {
                 yValueEnd = yCpaLocation;
@@ -316,7 +386,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 double correction = (2.6 + xCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
                 yValueEnd = yCpaLocation + correction;
             }
-        } else if (shipAis.geoTssArea == GeoTssAreas.TO_SOUTH) {
+        } else if (shipsToSouth.containsKey(shipAis.mmsiNum)) {
             yValueEnd = 1.6;
             if (hdg == 180) {
                 xValueEnd = xCpaLocation;
@@ -329,7 +399,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 double correction = (1.6 - yCpaLocation) / Math.abs(Math.tan(angle * Math.PI / 180));
                 xValueEnd = xCpaLocation + correction;
             }
-        } else if (shipAis.geoTssArea == GeoTssAreas.TO_NORTH) {
+        } else if (shipsToNorth.containsKey(shipAis.mmsiNum)) {
             yValueEnd = -1.6;
             if (hdg == 0) {
                 xValueEnd = xCpaLocation;
@@ -742,22 +812,22 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 XYLineAnnotation xyLineAnnotation1 = null;
                 XYLineAnnotation xyLineAnnotation2 = null;
 
-                boolean checkIfPointInSegment = false;
+                boolean checkIfPointInSegmentA = false;
                 if (shipsPair.shipA.geoTssArea == GeoTssAreas.TO_EAST
                         && crossPoint.getX() < xValueLine1) {
-                    checkIfPointInSegment = true;
+                    checkIfPointInSegmentA = true;
                 } else if (shipsPair.shipA.geoTssArea == GeoTssAreas.TO_SOUTH
                         && crossPoint.getY() > yValueLine1) {
-                    checkIfPointInSegment = true;
+                    checkIfPointInSegmentA = true;
                 } else if (shipsPair.shipA.geoTssArea == GeoTssAreas.TO_NORTH
                         && crossPoint.getY() < yValueLine1) {
-                    checkIfPointInSegment = true;
+                    checkIfPointInSegmentA = true;
                 }
 
                 boolean checkIfPointOutA = false;
                 boolean checkIfPointOutB = false;
 
-                if (checkIfPointInSegment) {
+                if (checkIfPointInSegmentA) {
                     double distFmBcrToEnd1 = Math.sqrt((yValueLine1 - crossPoint.getY()) * (yValueLine1 - crossPoint.getY())
                         + (xValueLine1 - crossPoint.getX()) * (xValueLine1 - crossPoint.getX()));
                     double distFmBcrToEnd2 = distFmBcrToEnd1 * shipsPair.shipB.speed / shipsPair.shipA.speed;
@@ -925,13 +995,13 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
                         xyCoordinatesEnds2 = xyCoordinatesInCross2;
 
-                        if (shipsToEast.containsKey(shipsPair.shipA.mmsiNum)
+                        if (shipsToEast.containsKey(shipsPair.shipB.mmsiNum)
                                 && xyCoordinatesInCross2[0] > crossPoint.getX()) {
                             checkIfPointOutB = true;
-                        } else if (shipsToSouth.containsKey(shipsPair.shipA.mmsiNum)
+                        } else if (shipsToSouth.containsKey(shipsPair.shipB.mmsiNum)
                                 && xyCoordinatesInCross2[1] < crossPoint.getY()) {
                             checkIfPointOutB = true;
-                        } else if (shipsToNorth.containsKey(shipsPair.shipA.mmsiNum)
+                        } else if (shipsToNorth.containsKey(shipsPair.shipB.mmsiNum)
                                 && xyCoordinatesInCross2[1] > crossPoint.getY()) {
                             checkIfPointOutB = true;
                         }
@@ -1199,8 +1269,187 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         return null;
     }
 
+    private Map<Integer, ConflictShips> trialShipsPairInConflict = new HashMap<>();
 
+    void getSafeCpa(String manouever, double cpa) {
+        for (ConflictShips shipsPair : shipsPairInConflict) {
+            if (shipsPair.cpaValue < cpa) {
+                if (shipsToEast.containsKey(shipsPair.shipA.mmsiNum)
+                        && shipsToSouth.containsKey(shipsPair.shipB.mmsiNum)) {
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever);
+                    Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
+                    trialShipsPairInConflict.put(key, safeConflict);
+                } else if (shipsToEast.containsKey(shipsPair.shipB.mmsiNum)
+                        && shipsToSouth.containsKey(shipsPair.shipA.mmsiNum)) {
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever);
+                    Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
+                    trialShipsPairInConflict.put(key, safeConflict);
+                } else if (shipsToNorth.containsKey(shipsPair.shipA.mmsiNum)
+                        && shipsToEast.containsKey(shipsPair.shipB.mmsiNum)) {
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever);
+                    Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
+                    trialShipsPairInConflict.put(key, safeConflict);
+                } else if (shipsToNorth.containsKey(shipsPair.shipB.mmsiNum)
+                        && shipsToEast.containsKey(shipsPair.shipA.mmsiNum)) {
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever);
+                    Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
+                    trialShipsPairInConflict.put(key, safeConflict);
+                }
+            }
+        }
+    }
 
+    private ConflictShips getSafeConflict(ShipAis shipAis, ShipAis shipAIS2, String manouever) {
+        GeodeticCalculator geoCalc = ApplicationCPA.geoCalc;
+        double cpaDistanceNm = 0;
+        double cpaTimeMin = 0;
+        DirectPosition position1Future = null;
+        DirectPosition position2Future = null;
+        DirectPosition cpaCenterPsn = null;
+        while (cpaDistanceNm < 0.5) {
+            ShipState shipStateA = new ShipState(shipAis.getMmsi(),
+                    new Point2D.Double(shipAis.latitude, shipAis.longitude), shipAis.hdg, shipAis.speed); //8, 54 // 8.16, 54
+            ShipState shipStateB = new ShipState(shipAIS2.getMmsi(),
+                    new Point2D.Double(shipAIS2.latitude, shipAIS2.longitude), shipAIS2.hdg, shipAIS2.speed); //8.16, 53.9 | 0.45507,-0.29586
+
+            Point2D position1 = shipStateA.getPoint();
+            geoCalc.setStartGeographicPoint(position1.getX(), position1.getY());
+
+            Point2D position2 = shipStateB.getPoint();
+            geoCalc.setEndGeographicPoint(position2.getX(), position2.getY());
+
+            double distance = geoCalc.getGeodesicDistance();
+            double azi = geoCalc.getStartingAzimuth();
+            azi = (azi + 540 + 180) % 360;
+            azi = Math.toRadians(azi);
+
+            /** polar to cartesian **/
+            double x = distance * Math.cos(azi);
+            double y = distance * Math.sin(azi);
+
+            /** create tracks **/
+            double speed_kn1 = shipStateA.getSpeed_current_kn();
+            double speed_kn2 = shipStateB.getSpeed_current_kn();
+            Track track1 = new Track(0, 0, speed_kn1 * 1.852 / 3.6, shipStateA.getHeading_current_deg());
+            Track track2 = new Track(x, y, speed_kn2 * 1.852 / 3.6, shipStateB.getHeading_current_deg());
+
+            /** calculate TCPA **/
+            double cpaTime = Track.cpaTime(track1, track2);
+            cpaTimeMin = cpaTime / 60;
+
+            /** calc CPA-P1 **/
+            geoCalc.setStartGeographicPoint(position1.getX(), position1.getY());
+            if (Math.signum(cpaTime) == -1) {
+                geoCalc.setStartingAzimuth((shipStateA.getHeading_current_deg() + 180) % 360);
+            } else {
+                geoCalc.setStartingAzimuth(shipStateA.getHeading_current_deg());
+            }
+            geoCalc.setGeodesicDistance(speed_kn1 * 1.852 / 3.6 * Math.abs(cpaTime));
+            position1Future = geoCalc.getEndPoint();
+
+            /** calc CPA-P2 **/
+            geoCalc.setStartGeographicPoint(position2.getX(), position2.getY());
+            if (Math.signum(cpaTime) == -1) {
+                geoCalc.setStartingAzimuth((shipStateB.getHeading_current_deg() + 180) % 360);
+            } else {
+                geoCalc.setStartingAzimuth(shipStateB.getHeading_current_deg());
+            }
+            geoCalc.setGeodesicDistance(speed_kn2 * 1.852 / 3.6 * Math.abs(cpaTime));
+            position2Future = geoCalc.getEndPoint();
+
+            /** calc distance between CPA-P1 & CPA-P2 **/
+            geoCalc.setStartPoint(position1Future);
+            geoCalc.setEndPoint(position2Future);
+            double cpaDistance = geoCalc.getGeodesicDistance();
+            double startingAzimuth = geoCalc.getStartingAzimuth();
+            cpaDistanceNm = cpaDistance / 1852;
+            geoCalc.setStartGeographicPoint(position1Future.getCoordinate()[0], position1Future.getCoordinate()[1]);
+            geoCalc.setStartingAzimuth(startingAzimuth);
+            geoCalc.setGeodesicDistance(cpaDistance/2);
+            cpaCenterPsn = geoCalc.getEndPoint();
+
+            if (manouever.equals("SPEED")) {
+                shipAIS2.speed -= 0.5;
+            }
+            if (manouever.equals("HDG")) {
+                shipAIS2.hdg++;
+            }
+        }
+        return new ConflictShips(cpaDistanceNm, cpaTimeMin,
+        cpaCenterPsn, shipAis, shipAIS2, position1Future, position2Future);
+    }
+
+    private void updateTrial() {
+        double xValue = 0;
+        double yValue = 0;
+        for (ConflictShips shipsPair : trialShipsPairInConflict.values()) {
+                double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
+                xValue = xyCoordinates[0];
+                yValue = xyCoordinates[1];
+
+                //lines of ships` paths
+                double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
+                double xValueLine1 = xyCoordinatesLine1[0];
+                double yValueLine1 = xyCoordinatesLine1[1];
+
+                double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
+                double xValueLine2 = xyCoordinatesLine2[0];
+                double yValueLine2 = xyCoordinatesLine2[1];
+
+                double[] xyCoordinatesEnds1
+                        = getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA, shipsPair.shipA.hdg);
+                double[] xyCoordinatesEnds2
+                        = getXYCoordinatesEnds(xValueLine2, yValueLine2, shipsPair.shipB, shipsPair.shipB.hdg);
+
+                //check if vessel in cross area
+                boolean insideAreaShipA = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipA.geoPosition.getLatitude(),
+                        shipsPair.shipA.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
+
+                boolean insideAreaShipB = BoundaryArea.insideArea(new Point2D.Double(shipsPair.shipB.geoPosition.getLatitude(),
+                        shipsPair.shipB.geoPosition.getLongitude()), CrossAreaChart.crossAreaSouth);
+
+                XYLineAnnotation xyLineAnnotation1;
+                if (insideAreaShipA) {
+                    double[] xyCoordinatesInCross1 =
+                            getXYCoordinates(new DirectPosition2D(shipsPair.shipA.geoPosition.getLatitude(),
+                                    shipsPair.shipA.geoPosition.getLongitude()));
+
+                    xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesInCross1[0], xyCoordinatesInCross1[1],
+                            xValueLine1, yValueLine1, new BasicStroke(2f), Color.YELLOW);
+
+                    Ellipse2D.Double shipLocationInCross1
+                            = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
+                    BasicStroke basicStroke1
+                            = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                    xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
+                } else {
+                    xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
+                            xValueLine1, yValueLine1, new BasicStroke(2f), Color.YELLOW);
+                }
+                XYLineAnnotation xyLineAnnotation2;
+                if (insideAreaShipB) {
+                    double[] xyCoordinatesInCross2 =
+                            getXYCoordinates(new DirectPosition2D(shipsPair.shipB.geoPosition.getLatitude(),
+                                    shipsPair.shipB.geoPosition.getLongitude()));
+
+                    xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesInCross2[0], xyCoordinatesInCross2[1],
+                            xValueLine2, yValueLine2, new BasicStroke(2f), Color.YELLOW);
+
+                    Ellipse2D.Double shipLocationInCross2
+                            = new Ellipse2D.Double(xyCoordinatesInCross2[0] - 0.025, xyCoordinatesInCross2[1] - 0.025, 0.05, 0.05);
+                    BasicStroke basicStroke2
+                            = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                    xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
+                } else {
+                    xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
+                            xValueLine2, yValueLine2, new BasicStroke(2f), Color.YELLOW);
+                }
+     /*       trialXyAnnotationList.add(xyLineAnnotation1);
+            trialXyAnnotationList.add(xyLineAnnotation2);*/
+            xyPlot.addAnnotation(xyLineAnnotation1);
+            xyPlot.addAnnotation(xyLineAnnotation2);
+        }
+    }
 
         public void run () {
             EventQueue.invokeLater(() -> {
