@@ -89,7 +89,18 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         JSpinner jSpinnerShipAllowCpa = new JSpinner(spinnerModelAllowCpa);
 
 
-
+        controlNorth.add(new JButton(new AbstractAction("SafeCpa") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            /*    for (XYAnnotation xyAnnotation : trialXyAnnotationList) {
+                    xyPlot.removeAnnotation(xyAnnotation);
+                }*/
+                String valueOfManoeuver = jSpinnerShipTrial.getValue().toString();
+                double valueFilterCpa = Double.parseDouble(jSpinnerShipAllowCpa.getValue().toString());
+                getSafeCpa(valueOfManoeuver, valueFilterCpa);
+                updateTrial(valueFilterCpa);
+            }
+        }));
 
 
         controlNorth.add(new JButton(new AbstractAction("in BWCR psn") {
@@ -138,18 +149,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             }
         }));
 
-        controlSouth.add(new JButton(new AbstractAction("SafeCpa") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            /*    for (XYAnnotation xyAnnotation : trialXyAnnotationList) {
-                    xyPlot.removeAnnotation(xyAnnotation);
-                }*/
-                String valueOfManoeuver = jSpinnerShipTrial.getValue().toString();
-                double valueFilterCpa = Double.parseDouble(jSpinnerShipAllowCpa.getValue().toString());
-                getSafeCpa(valueOfManoeuver, valueFilterCpa);
-                updateTrial();
-            }
-        }));
+
 
         JTextArea jTextAreaCpa = new JTextArea("cpa <");
         controlNorth.add(jTextAreaCpa);
@@ -1276,22 +1276,22 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             if (shipsPair.cpaValue < cpa) {
                 if (shipsToEast.containsKey(shipsPair.shipA.mmsiNum)
                         && shipsToSouth.containsKey(shipsPair.shipB.mmsiNum)) {
-                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever);
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever, cpa);
                     Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
                     trialShipsPairInConflict.put(key, safeConflict);
                 } else if (shipsToEast.containsKey(shipsPair.shipB.mmsiNum)
                         && shipsToSouth.containsKey(shipsPair.shipA.mmsiNum)) {
-                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever);
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever, cpa);
                     Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
                     trialShipsPairInConflict.put(key, safeConflict);
                 } else if (shipsToNorth.containsKey(shipsPair.shipA.mmsiNum)
                         && shipsToEast.containsKey(shipsPair.shipB.mmsiNum)) {
-                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever);
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipA, shipsPair.shipB, manouever, cpa);
                     Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
                     trialShipsPairInConflict.put(key, safeConflict);
                 } else if (shipsToNorth.containsKey(shipsPair.shipB.mmsiNum)
                         && shipsToEast.containsKey(shipsPair.shipA.mmsiNum)) {
-                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever);
+                    ConflictShips safeConflict = getSafeConflict(shipsPair.shipB, shipsPair.shipA, manouever, cpa);
                     Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
                     trialShipsPairInConflict.put(key, safeConflict);
                 }
@@ -1299,14 +1299,14 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         }
     }
 
-    private ConflictShips getSafeConflict(ShipAis shipAis, ShipAis shipAIS2, String manouever) {
+    private ConflictShips getSafeConflict(ShipAis shipAis, ShipAis shipAIS2, String manouever, double cpa) {
         GeodeticCalculator geoCalc = ApplicationCPA.geoCalc;
         double cpaDistanceNm = 0;
         double cpaTimeMin = 0;
         DirectPosition position1Future = null;
         DirectPosition position2Future = null;
         DirectPosition cpaCenterPsn = null;
-        while (cpaDistanceNm < 0.5) {
+        while (cpaDistanceNm < cpa) {
             ShipState shipStateA = new ShipState(shipAis.getMmsi(),
                     new Point2D.Double(shipAis.latitude, shipAis.longitude), shipAis.hdg, shipAis.speed); //8, 54 // 8.16, 54
             ShipState shipStateB = new ShipState(shipAIS2.getMmsi(),
@@ -1368,21 +1368,31 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             geoCalc.setGeodesicDistance(cpaDistance/2);
             cpaCenterPsn = geoCalc.getEndPoint();
 
-            if (manouever.equals("SPEED")) {
-                shipAIS2.speed -= 0.5;
-            }
+
             if (manouever.equals("HDG")) {
                 shipAIS2.hdg++;
+            }
+            if (manouever.equals("SPD")) {
+                shipAIS2.speed -= 0.5;
+            }
+            if (manouever.equals("MIX")) {
+                shipAIS2.hdg++;
+                shipAIS2.speed -= 0.5;
             }
         }
         return new ConflictShips(cpaDistanceNm, cpaTimeMin,
         cpaCenterPsn, shipAis, shipAIS2, position1Future, position2Future);
     }
 
-    private void updateTrial() {
+    List<Integer> mmsilist = new ArrayList<>();
+
+    private void updateTrial(double cpa) {
         double xValue = 0;
         double yValue = 0;
         for (ConflictShips shipsPair : trialShipsPairInConflict.values()) {
+                if (shipsPair.cpaValue < cpa) {
+                    continue;
+                }
                 double[] xyCoordinates = getXYCoordinates(shipsPair.cpaLocation);
                 xValue = xyCoordinates[0];
                 yValue = xyCoordinates[1];

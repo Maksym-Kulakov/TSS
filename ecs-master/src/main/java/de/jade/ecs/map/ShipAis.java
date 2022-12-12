@@ -50,37 +50,38 @@ public class ShipAis implements ShipInter {
 
     public void addShipsInsideAreaAisHashMapToEast(ShipAis ship) {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
+        if (shipsInsideAreaToEastAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
+            return;
+        }
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToEast)) {
             shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_EAST;
-            return;
-        }
-        if (shipsInsideAreaToEastAisHashMap.containsKey(ship.mmsiNum)) {
-            shipsInsideAreaToEastAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
     public void addShipsInsideAreaAisHashMapToSouth(ShipAis ship) {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
+        if (shipsInsideAreaToSouthAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
+            return;
+        }
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToSouth)) {
             shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_SOUTH;
-            return;
         }
-        if (shipsInsideAreaToSouthAisHashMap.containsKey(ship.mmsiNum)) {
-            shipsInsideAreaToSouthAisHashMap.put(ship.mmsiNum, ship);
-        }
+
     }
 
     public void addShipsInsideAreaAisHashMapToNorth(ShipAis ship) {
         Point2D.Double geoPoint = new Point2D.Double(ship.latitude, ship.longitude);
+        if (shipsInsideAreaToNorthAisHashMap.containsKey(ship.mmsiNum)) {
+            shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
+            return;
+        }
         if (BoundaryArea.insideArea(geoPoint, TssArea.trafficLineToNorth)) {
             shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
             ship.geoTssArea = GeoTssAreas.TO_NORTH;
-            return;
-        }
-        if (shipsInsideAreaToNorthAisHashMap.containsKey(ship.mmsiNum)) {
-            shipsInsideAreaToNorthAisHashMap.put(ship.mmsiNum, ship);
         }
     }
 
