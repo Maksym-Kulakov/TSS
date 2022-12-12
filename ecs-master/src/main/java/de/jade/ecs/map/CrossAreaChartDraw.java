@@ -311,7 +311,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         double yValueProlong = 0;
         hdg =  hdg + 14;
         double angle = 0;
-        if (shipAis.geoTssArea == GeoTssAreas.TO_EAST) {
+        if (shipsToEast.containsKey(shipAis.mmsiNum)) {
             if (hdg == 90) {
                 yValueProlong = yEnd;
                 xValueProlong = xEnd + additionalDist;
@@ -328,7 +328,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 xValueProlong = xEnd + correctionX;
                 yValueProlong = yEnd - correctionY;
             }
-        } else if (shipAis.geoTssArea == GeoTssAreas.TO_SOUTH) {
+        } else if (shipsToSouth.containsKey(shipAis.mmsiNum)) {
             if (hdg == 180) {
                 yValueProlong = yEnd - additionalDist;
                 xValueProlong = xEnd;
@@ -345,7 +345,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 xValueProlong = xEnd - correctionX;
                 yValueProlong = yEnd - correctionY;
             }
-        } else if (shipAis.geoTssArea == GeoTssAreas.TO_NORTH) {
+        } else if (shipsToNorth.containsKey(shipAis.mmsiNum)) {
             yValueProlong = -1.6;
             if (hdg == 0) {
                 yValueProlong = yEnd + additionalDist;
