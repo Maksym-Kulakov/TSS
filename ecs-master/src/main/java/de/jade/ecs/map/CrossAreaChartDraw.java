@@ -116,6 +116,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                 updateBCR(valueFilterCpa, valueFilterTcpa);
                 account = 0;
+                safeCpaPushed = false;
             }
         }));
 
@@ -130,6 +131,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
                 update(valueFilterCpa, valueFilterTcpa);
                 account = 0;
+                safeCpaPushed = false;
             }
         }));
 
@@ -477,16 +479,35 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 }
                 textAnnotation.setFont(new Font("Tahoma", Font.BOLD, 10));
 
-                //lines of ships` paths
-                double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
-                double xValueLine1 = xyCoordinatesLine1[0];
-                double yValueLine1 = xyCoordinatesLine1[1];
-                directPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
+                double xValueLine1;
+                double yValueLine1;
+                double xValueLine2;
+                double yValueLine2;
 
-                double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
-                double xValueLine2 = xyCoordinatesLine2[0];
-                double yValueLine2 = xyCoordinatesLine2[1];
-                directPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
+                if (safeCpaPushed) {
+                    double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.shipA.position1Future);
+                    xValueLine1 = xyCoordinatesLine1[0];
+                    yValueLine1 = xyCoordinatesLine1[1];
+                    directPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
+
+                    double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.shipB.position2Future);
+                    xValueLine2 = xyCoordinatesLine2[0];
+                    yValueLine2 = xyCoordinatesLine2[1];
+                    directPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
+                } else {
+                    double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
+                    xValueLine1 = xyCoordinatesLine1[0];
+                    yValueLine1 = xyCoordinatesLine1[1];
+                    directPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
+
+                    double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
+                    xValueLine2 = xyCoordinatesLine2[0];
+                    yValueLine2 = xyCoordinatesLine2[1];
+                    directPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
+                }
+
+                //lines of ships` paths
+
 
                 double[] xyCoordinatesEnds1
                         = getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA, shipsPair.shipA.hdg);
