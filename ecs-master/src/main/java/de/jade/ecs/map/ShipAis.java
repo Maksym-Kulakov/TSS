@@ -6,6 +6,7 @@ import de.jade.ecs.map.riskassessment.TcpaCalculation;
 import de.jade.ecs.map.shipchart.ShipInter;
 import de.jade.ecs.map.shipchart.TssArea;
 import org.jxmapviewer.viewer.GeoPosition;
+import org.opengis.geometry.DirectPosition;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ public class ShipAis implements ShipInter {
     double speed;
     String destination;
     GeoTssAreas geoTssArea;
+    DirectPosition position1Future;
+    DirectPosition position2Future;
 
     public ShipAis() {
     }

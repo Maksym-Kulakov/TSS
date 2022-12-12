@@ -58,6 +58,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     List<XYAnnotation> xyAnnotationList;
     List<XYAnnotation> trialXyAnnotationList;
     int account = 0;
+    boolean safeCpaPushed = false;
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -99,6 +100,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 double valueFilterCpa = Double.parseDouble(jSpinnerShipAllowCpa.getValue().toString());
                 getSafeCpa(valueOfManoeuver, valueFilterCpa);
                 updateTrial(valueFilterCpa);
+                safeCpaPushed = true;
             }
         }));
 
@@ -1380,6 +1382,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 shipAIS2.speed -= 0.5;
             }
         }
+        shipAis.position1Future = position1Future;
+        shipAIS2.position2Future = position2Future;
         return new ConflictShips(cpaDistanceNm, cpaTimeMin,
         cpaCenterPsn, shipAis, shipAIS2, position1Future, position2Future);
     }
@@ -1398,11 +1402,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 yValue = xyCoordinates[1];
 
                 //lines of ships` paths
-                double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
+                double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.shipA.position1Future);
                 double xValueLine1 = xyCoordinatesLine1[0];
                 double yValueLine1 = xyCoordinatesLine1[1];
 
-                double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
+                double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.shipB.position2Future);
                 double xValueLine2 = xyCoordinatesLine2[0];
                 double yValueLine2 = xyCoordinatesLine2[1];
 
