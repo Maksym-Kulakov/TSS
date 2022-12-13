@@ -485,12 +485,12 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 double yValueLine2;
 
                 if (safeCpaPushed) {
-                    double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.shipA.position1Future);
+                    double[] xyCoordinatesLine1 = getXYCoordinates(shipsPair.position1Future);
                     xValueLine1 = xyCoordinatesLine1[0];
                     yValueLine1 = xyCoordinatesLine1[1];
                     directPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
 
-                    double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.shipB.position2Future);
+                    double[] xyCoordinatesLine2 = getXYCoordinates(shipsPair.position2Future);
                     xValueLine2 = xyCoordinatesLine2[0];
                     yValueLine2 = xyCoordinatesLine2[1];
                     directPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
