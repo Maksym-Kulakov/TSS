@@ -1326,7 +1326,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         pair.getValue().shipA = shipMan.getValue();
                         pair.getValue().shipA.positionFuture = shipMan.getValue().positionFuture;
                     }
-                    if (pair.getValue().shipB.mmsiNum.equals(shipMan.getKey())) {
+                    if (pair.getValue().shipB.mmsiNum.equals(shipMan.getKey()) &&
+                    pair.getValue().shipB != shipMan.getValue()) {
                         pair.getValue().shipB = shipMan.getValue();
                         pair.getValue().shipB.positionFuture = shipMan.getValue().positionFuture;
                     }
@@ -1402,9 +1403,12 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             cpaDistanceNm = cpaDistance / 1852;
             geoCalc.setStartGeographicPoint(position1Future.getCoordinate()[0], position1Future.getCoordinate()[1]);
             geoCalc.setStartingAzimuth(startingAzimuth);
-            geoCalc.setGeodesicDistance(cpaDistance/2);
+            geoCalc.setGeodesicDistance(cpaDistance / 2);
             cpaCenterPsn = geoCalc.getEndPoint();
 
+            if (cpaDistanceNm > cpa) {
+                break;
+            }
 
             if (manouever.equals("HDG")) {
                 shipB.hdg++;
@@ -1434,8 +1438,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         conflictShips.shipA.positionFuture = position1Future;
         conflictShips.shipB.positionFuture = position2Future;
         trialShipsPairInConflict.put(key, conflictShips);
-        shipsManoeuvered.put(conflictShips.shipA.mmsiNum, conflictShips.shipA);
-        shipsManoeuvered.put(conflictShips.shipB.mmsiNum, conflictShips.shipB);
+        if (conflictShips.draw) {
+            shipsManoeuvered.put(conflictShips.shipB.mmsiNum, conflictShips.shipB);
+        }
         return conflictShips;
     }
 
