@@ -26,8 +26,7 @@ public class ShipAis implements ShipInter {
     double speed;
     String destination;
     GeoTssAreas geoTssArea;
-    DirectPosition position1Future;
-    DirectPosition position2Future;
+    DirectPosition positionFuture;
 
     public ShipAis() {
     }

@@ -19,6 +19,7 @@ public class ConflictShips {
     ShipAis shipB;
     DirectPosition position1Future;
     DirectPosition position2Future;
+    boolean draw = false;
 
     public ConflictShips(Double cpaValue, Double tcpaValue,
                          DirectPosition cpaLocation, ShipAis shipA,
