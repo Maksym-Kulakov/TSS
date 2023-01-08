@@ -72,9 +72,9 @@ public class ShipIntentions {
     }
 
     public static XYLineAnnotation[] getTurnLine(Map.Entry<Integer, ConflictShips> shipsPair,
-                                               double xValueLine1, double yValueLine1,
-                                               double xValueLine2, double yValueLine2,
-                                               double[] xyCoordinatesEnds1, double[] xyCoordinatesEnds2) {
+                                                 double xValueLine1, double yValueLine1,
+                                                 double xValueLine2, double yValueLine2,
+                                                 double[] xyCoordinatesEnds1, double[] xyCoordinatesEnds2) {
         XYLineAnnotation xyLineAnnotationTurnA = null;
         XYLineAnnotation xyLineAnnotationTurnB = null;
         if (CrossAreaChartDraw.shipsToSouth.containsKey(shipsPair.getValue().shipA.mmsiNum)
@@ -94,6 +94,24 @@ public class ShipIntentions {
                 == AlterationsOfCourse.STARBOARD) {
             xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1] - 0.01, xValueLine2, yValueLine2 - 0.01, new BasicStroke(1f), Color.green);
         }
-        return new XYLineAnnotation[] {xyLineAnnotationTurnA, xyLineAnnotationTurnB};
+        return new XYLineAnnotation[]{xyLineAnnotationTurnA, xyLineAnnotationTurnB};
+    }
+
+    public static void performShipsPriority() {
+        for (Map.Entry<Integer, ConflictShips> shipsPair : CrossAreaChartDraw.trialShipsPairInConflict.entrySet()) {
+            if (CrossAreaChartDraw.shipsToEast.containsKey(shipsPair.getValue().shipA.mmsiNum)
+                    && CrossAreaChartDraw.shipsToSouth.containsKey(shipsPair.getValue().shipB.mmsiNum)) {
+                shipsPair.getValue().shipBGiveWay = true;
+            } else if (CrossAreaChartDraw.shipsToEast.containsKey(shipsPair.getValue().shipB.mmsiNum)
+                    && CrossAreaChartDraw.shipsToSouth.containsKey(shipsPair.getValue().shipA.mmsiNum)) {
+                shipsPair.getValue().shipAGiveWay = true;
+            } else if (CrossAreaChartDraw.shipsToNorth.containsKey(shipsPair.getValue().shipA.mmsiNum)
+                    && CrossAreaChartDraw.shipsToEast.containsKey(shipsPair.getValue().shipB.mmsiNum)) {
+                shipsPair.getValue().shipBGiveWay = true;
+            } else if (CrossAreaChartDraw.shipsToNorth.containsKey(shipsPair.getValue().shipB.mmsiNum)
+                    && CrossAreaChartDraw.shipsToEast.containsKey(shipsPair.getValue().shipA.mmsiNum)) {
+                shipsPair.getValue().shipAGiveWay = true;
+            }
+        }
     }
 }

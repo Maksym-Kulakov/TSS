@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-public class ConflictShips {
+public class ConflictShips implements Cloneable {
     public Double cpaValue;
     public Double tcpaValue;
     public DirectPosition cpaLocation;
@@ -20,6 +20,8 @@ public class ConflictShips {
     public DirectPosition position1Future;
     public DirectPosition position2Future;
     public boolean draw = false;
+    public boolean shipAGiveWay = false;
+    public boolean shipBGiveWay = false;
 
     public ConflictShips(Double cpaValue, Double tcpaValue,
                          DirectPosition cpaLocation, ShipAis shipA,
@@ -34,4 +36,12 @@ public class ConflictShips {
     }
 
     Stack<String> strings = new Stack<>();
+
+    @Override
+    public ConflictShips clone() throws CloneNotSupportedException {
+        ConflictShips newConflictShips = (ConflictShips) super.clone();
+        newConflictShips.shipA = shipA.clone();
+        newConflictShips.shipB = shipB.clone();
+        return newConflictShips;
+    }
 }

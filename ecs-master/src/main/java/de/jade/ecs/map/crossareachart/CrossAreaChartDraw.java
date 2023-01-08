@@ -95,7 +95,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 String valueOfManoeuver = jSpinnerShipTrial.getValue().toString();
                 double valueFilterCpa = Double.parseDouble(jSpinnerShipAllowCpa.getValue().toString());
-                TrialManouever.getSafeCpa(valueOfManoeuver, valueFilterCpa);
+                try {
+                    TrialManouever.getSafeCpa(valueOfManoeuver, valueFilterCpa);
+                } catch (CloneNotSupportedException ex) {
+                    ex.printStackTrace();
+                }
                 updateTrial(valueFilterCpa);
                 safeCpaPushed = true;
             }
@@ -733,11 +737,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             yValue = xyCoordinates[1];
 
             //lines of ships` paths
-            double[] xyCoordinatesLine1 = XYCoordinatesUtil.getXYCoordinates(shipsPair.shipA.positionFuture);
+            double[] xyCoordinatesLine1 = XYCoordinatesUtil.getXYCoordinates(shipsPair.position1Future);
             double xValueLine1 = xyCoordinatesLine1[0];
             double yValueLine1 = xyCoordinatesLine1[1];
 
-            double[] xyCoordinatesLine2 = XYCoordinatesUtil.getXYCoordinates(shipsPair.shipB.positionFuture);
+            double[] xyCoordinatesLine2 = XYCoordinatesUtil.getXYCoordinates(shipsPair.position2Future);
             double xValueLine2 = xyCoordinatesLine2[0];
             double yValueLine2 = xyCoordinatesLine2[1];
 

@@ -12,7 +12,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class ShipAis implements ShipInter {
+public class ShipAis implements ShipInter, Cloneable {
     public static HashMap<Integer, ShipAis> shipsAisHashMap = new HashMap<>();
     public static HashMap<Integer, ShipAis> shipsInsideAreaToEastAisHashMap = new HashMap<>();
     public static HashMap<Integer, ShipAis> shipsInsideAreaToSouthAisHashMap = new HashMap<>();
@@ -98,6 +98,11 @@ public class ShipAis implements ShipInter {
         for (Entry<Integer, ShipAis> value : values.entrySet()) {
             chartViewerObj.addShipPainter();
         }
+    }
+
+    @Override
+    public ShipAis clone() throws CloneNotSupportedException {
+        return (ShipAis) super.clone();
     }
 
     public double getSpeed() {
