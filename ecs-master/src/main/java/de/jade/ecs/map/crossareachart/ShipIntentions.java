@@ -7,7 +7,6 @@ import de.jade.ecs.map.geochart.DestinationsToEast;
 import de.jade.ecs.map.geochart.DestinationsToSouth;
 import de.jade.ecs.map.geochart.GeoTssAreas;
 import org.jfree.chart.annotations.XYLineAnnotation;
-
 import java.awt.*;
 import java.util.Map;
 

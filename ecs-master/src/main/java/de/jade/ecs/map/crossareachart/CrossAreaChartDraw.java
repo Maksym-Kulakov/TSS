@@ -536,7 +536,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
                                 crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
                     }
-                    //ShipA: line building depends on if ship already in Cross Area (to replace EndPsn)
+                    //ShipB: line building depends on if ship already in Cross Area (to replace EndPsn)
                     if (insideAreaShipB) {
                         //to get X & Y Chart coordinates for shipB psn
                         double[] xyCoordinatesInCross2 =
@@ -598,44 +598,42 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                     //find for shipA Chart coordinates for new "future position"
                     double[] otherBwrPoint = XYCoordinatesUtil.getProlongedPointCoordinates(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1], shipsPair.getValue().shipA, shipsPair.getValue().shipA.hdg, distOfLine1 - distFmBcrToEnd1);
 
-
+                    //ShipA: line building depends on if ship already in Cross Area (to replace EndPsn)
                     if (insideAreaShipA) {
+                        //to get X & Y Chart coordinates for shipA psn
                         double[] xyCoordinatesInCross1 =
                                 XYCoordinatesUtil.getXYCoordinates(new DirectPosition2D(shipsPair.getValue().shipA.geoPosition.getLatitude(),
                                         shipsPair.getValue().shipA.geoPosition.getLongitude()));
-
+                        //make Annotation line of path for ShipA, when inside Cross Area
                         xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesInCross1[0], xyCoordinatesInCross1[1],
                                 otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
 
+                        //DRAW points of BCR point for shipB and newFuturePsn for shipA
                         Ellipse2D.Double shipLocationInCross1
                                 = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
                         BasicStroke basicStroke1
                                 = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
                         xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
+                        //updating EndPsn as ShipPsn in cross area for fwg TurnLines
                         xyCoordinatesEnds1 = xyCoordinatesInCross1;
 
-                        if (shipsToEast.containsKey(shipsPair.getValue().shipA.mmsiNum)
-                                && xyCoordinatesInCross1[0] > otherBwrPoint[0]) {
-                            checkIfPointOutA = true;
-                        } else if (shipsToSouth.containsKey(shipsPair.getValue().shipA.mmsiNum)
-                                && xyCoordinatesInCross1[1] < otherBwrPoint[1]) {
-                            checkIfPointOutA = true;
-                        } else if (shipsToNorth.containsKey(shipsPair.getValue().shipA.mmsiNum)
-                                && xyCoordinatesInCross1[1] > otherBwrPoint[1]) {
-                            checkIfPointOutA = true;
-                        }
-
+                        //catch moment when shipA will be between cross point and future position (tcpa still > 0)
+                        //with using appr flag
+                        checkIfPointOutA = HighlighterUtil.isPeriodWithShipPsnBetweenBcrAndFuturePsn(
+                                new Point2D.Double(otherBwrPoint[0], otherBwrPoint[1]),
+                                shipsPair.getValue().shipA, xyCoordinatesInCross1);
                     } else {
+                        //make Annotation line of path for ShipA, when OUTside Cross Area
                         xyLineAnnotation1 = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1],
                                 otherBwrPoint[0], otherBwrPoint[1], new BasicStroke(2f), Color.white);
                     }
-
-
+                    //ShipB: line building depends on if ship already in Cross Area (to replace EndPsn)
                     if (insideAreaShipB) {
+                        //to get X & Y Chart coordinates for shipB psn
                         double[] xyCoordinatesInCross2 =
                                 XYCoordinatesUtil.getXYCoordinates(new DirectPosition2D(shipsPair.getValue().shipB.geoPosition.getLatitude(),
                                         shipsPair.getValue().shipB.geoPosition.getLongitude()));
-
+                        //make Annotation line of path for ShipB, when inside Cross Area
                         xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesInCross2[0], xyCoordinatesInCross2[1],
                                 crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
 
@@ -644,72 +642,48 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         BasicStroke basicStroke2
                                 = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
                         xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
+                        //updating EndPsn as ShipPsn in cross area for fwg TurnLines
                         xyCoordinatesEnds2 = xyCoordinatesInCross2;
 
-                        if (shipsToEast.containsKey(shipsPair.getValue().shipB.mmsiNum)
-                                && xyCoordinatesInCross2[0] > crossPoint.getX()) {
-                            checkIfPointOutB = true;
-                        } else if (shipsToSouth.containsKey(shipsPair.getValue().shipB.mmsiNum)
-                                && xyCoordinatesInCross2[1] < crossPoint.getY()) {
-                            checkIfPointOutB = true;
-                        } else if (shipsToNorth.containsKey(shipsPair.getValue().shipB.mmsiNum)
-                                && xyCoordinatesInCross2[1] > crossPoint.getY()) {
-                            checkIfPointOutB = true;
-                        }
-
+                        //catch moment when shipA will be between cross point and future position (tcpa still > 0)
+                        //with using appr flag
+                        checkIfPointOutB = HighlighterUtil.isPeriodWithShipPsnBetweenBcrAndFuturePsn(
+                                crossPoint, shipsPair.getValue().shipB, xyCoordinatesInCross2);
                     } else {
+                        //make Annotation line of path for ShipB, when OUTside Cross Area
                         xyLineAnnotation2 = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1],
                                 crossPoint.getX(), crossPoint.getY(), new BasicStroke(2f), Color.white);
                     }
 
-
+                    //check that both ships still before final BCR positions and then DRAW TURN LINES
                     if (!checkIfPointOutA && !checkIfPointOutB) {
 
                         directPositions.add(crossPoint);
                         directPositions.add(new Point2D.Double(otherBwrPoint[0], otherBwrPoint[1]));
 
-                        //green and red line to indicate ships port intentions
-                        XYLineAnnotation xyLineAnnotationTurnA = null;
-                        XYLineAnnotation xyLineAnnotationTurnB = null;
-
-                        if (shipsToSouth.containsKey(shipsPair.getValue().shipA.mmsiNum) && shipsToSouth.get(shipsPair.getValue().shipA.mmsiNum)
-                                == AlterationsOfCourse.PORT) {
-                            xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0] + 0.01, xyCoordinatesEnds1[1], otherBwrPoint[0] + 0.01, otherBwrPoint[1], new BasicStroke(1f), Color.red);
+                        //DRAW green and red line to indicate ships port intentions
+                        XYLineAnnotation[] turnLines = ShipIntentions.getTurnLine(shipsPair, otherBwrPoint[0], otherBwrPoint[1],
+                                crossPoint.getX(), crossPoint.getY(), xyCoordinatesEnds1, xyCoordinatesEnds2);
+                        if (turnLines[0] != null) {
+                            xyPlot.addAnnotation(turnLines[0]);
                         }
-                        if (shipsToEast.containsKey(shipsPair.getValue().shipA.mmsiNum) && shipsToEast.get(shipsPair.getValue().shipA.mmsiNum)
-                                == AlterationsOfCourse.STARBOARD) {
-                            xyLineAnnotationTurnA = new XYLineAnnotation(xyCoordinatesEnds1[0], xyCoordinatesEnds1[1] - 0.01, otherBwrPoint[0], otherBwrPoint[1] - 0.01, new BasicStroke(1f), Color.green);
-                        }
-                        if (shipsToSouth.containsKey(shipsPair.getValue().shipB.mmsiNum) && shipsToSouth.get(shipsPair.getValue().shipB.mmsiNum)
-                                == AlterationsOfCourse.PORT) {
-                            xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0] + 0.01, xyCoordinatesEnds2[1], crossPoint.getX() + 0.01, crossPoint.getY(), new BasicStroke(1f), Color.red);
-                        }
-                        if (shipsToEast.containsKey(shipsPair.getValue().shipB.mmsiNum) && shipsToEast.get(shipsPair.getValue().shipB.mmsiNum)
-                                == AlterationsOfCourse.STARBOARD) {
-                            xyLineAnnotationTurnB = new XYLineAnnotation(xyCoordinatesEnds2[0], xyCoordinatesEnds2[1] - 0.01, crossPoint.getX(), crossPoint.getY() - 0.01, new BasicStroke(1f), Color.green);
-                        }
-                        if (xyLineAnnotationTurnA != null) {
-                            xyPlot.addAnnotation(xyLineAnnotationTurnA);
-                        }
-                        if (xyLineAnnotationTurnB != null) {
-                            xyPlot.addAnnotation(xyLineAnnotationTurnB);
+                        if (turnLines[1] != null) {
+                            xyPlot.addAnnotation(turnLines[1]);
                         }
                     }
                 }
 
+                //check that both ships still before final BCR positions and then DRAW lines
                 if (!checkIfPointOutA && !checkIfPointOutB) {
-
                     xyPlot.addAnnotation(xyLineAnnotation1);
                     xyPlot.addAnnotation(xyLineAnnotation2);
-
                 }
 
-
-                //circle
-
+                //DRAW tcpa value in circle
                 xyPlot.addAnnotation(textAnnotation);
+                //DRAW circle for tcpa
                 drawTcpaSmall(xyPlot, xValue, yValue, shipsPair.getValue().tcpaValue);
-
+                //for period after Closing Situation, when ship is only one Point
             } else if (shipsPair.getValue().cpaValue < valueCpaLimit && shipsPair.getValue().tcpaValue < valueTCpaLimit
                     && shipsPair.getValue().tcpaValue < 0) {
                 double[] xyCoordinatesInCross1 =
@@ -720,6 +694,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         = new Ellipse2D.Double(xyCoordinatesInCross1[0] - 0.025, xyCoordinatesInCross1[1] - 0.025, 0.05, 0.05);
                 BasicStroke basicStroke1
                         = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                //DRAW ship A as point only
                 xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross1, basicStroke1, Color.DARK_GRAY, Color.DARK_GRAY));
 
                 double[] xyCoordinatesInCross2 =
@@ -730,10 +705,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         = new Ellipse2D.Double(xyCoordinatesInCross2[0] - 0.025, xyCoordinatesInCross2[1] - 0.025, 0.05, 0.05);
                 BasicStroke basicStroke2
                         = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
+                //DRAW ship B as point only
                 xyPlot.addAnnotation(new XYShapeAnnotation(shipLocationInCross2, basicStroke2, Color.DARK_GRAY, Color.DARK_GRAY));
             }
 
-
+            //DRAW all points of ships for FuturePositions
             for (Point2D.Double directPosition : directPositions) {
                 Ellipse2D.Double cpaLocationShapeEnd1
                         = new Ellipse2D.Double(directPosition.getX() - 0.015, directPosition.getY() - 0.015, 0.03, 0.03);
@@ -744,6 +720,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         }
     }
 
+    //DRAW tcpa circle
     private void drawTcpaSmall(XYPlot xyPlot, double xValue, double yValue, double tcpaValue) {
         Ellipse2D.Double cpaLocationShape1
                 = new Ellipse2D.Double(xValue + 0.1645, yValue - 0.062, 0.15, 0.15);
@@ -751,6 +728,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                 = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f);
         xyPlot.addAnnotation(new XYShapeAnnotation(cpaLocationShape1, basicStroke, Color.GRAY, null));
     }
+
 
     private static final Map<Integer, ConflictShips> trialShipsPairInConflict = new HashMap<>();
 
