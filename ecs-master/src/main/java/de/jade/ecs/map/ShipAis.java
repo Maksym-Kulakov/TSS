@@ -18,15 +18,15 @@ public class ShipAis implements ShipInter {
     public static HashMap<Integer, ShipAis> shipsInsideAreaToSouthAisHashMap = new HashMap<>();
     public static HashMap<Integer, ShipAis> shipsInsideAreaToNorthAisHashMap = new HashMap<>();
     public static HashMap<Integer, ShipAis> shipsInsideAreaInWeserAisHashMap = new HashMap<>();
-    GeoPosition geoPosition;
-    Integer mmsiNum;
-    double latitude;
-    double longitude;
-    double hdg;
-    double speed;
-    String destination;
-    GeoTssAreas geoTssArea;
-    DirectPosition positionFuture;
+    public GeoPosition geoPosition;
+    public Integer mmsiNum;
+    public double latitude;
+    public double longitude;
+    public double hdg;
+    public double speed;
+    public String destination;
+    public GeoTssAreas geoTssArea;
+    public DirectPosition positionFuture;
 
     public ShipAis() {
     }

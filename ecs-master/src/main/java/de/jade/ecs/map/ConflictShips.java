@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.Stack;
 
 public class ConflictShips {
-    Double cpaValue;
-    Double tcpaValue;
-    DirectPosition cpaLocation;
-    ShipAis shipA;
-    ShipAis shipB;
-    DirectPosition position1Future;
-    DirectPosition position2Future;
-    boolean draw = false;
+    public Double cpaValue;
+    public Double tcpaValue;
+    public DirectPosition cpaLocation;
+    public ShipAis shipA;
+    public ShipAis shipB;
+    public DirectPosition position1Future;
+    public DirectPosition position2Future;
+    public boolean draw = false;
 
     public ConflictShips(Double cpaValue, Double tcpaValue,
                          DirectPosition cpaLocation, ShipAis shipA,

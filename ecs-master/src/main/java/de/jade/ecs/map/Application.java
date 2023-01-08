@@ -1,5 +1,6 @@
 package de.jade.ecs.map;
 
+import de.jade.ecs.map.crossareachart.CrossAreaChartDraw;
 import de.jade.ecs.map.xychart.DynamicSimulation;
 
 import java.util.concurrent.ExecutorService;
