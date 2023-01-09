@@ -5,6 +5,7 @@ import de.jade.ecs.map.ShipAis;
 import de.jade.ecs.map.Track;
 import org.apache.sis.referencing.CommonCRS;
 import org.apache.sis.referencing.GeodeticCalculator;
+import org.opengis.geometry.DirectPosition;
 import org.scheduler.agent.state.ShipState;
 import java.awt.geom.Point2D;
 import java.util.Map;
@@ -22,26 +23,28 @@ public class TrialManouever {
         }
 
         for (Map.Entry<Integer, ConflictShips> shipsPair : CrossAreaChartDraw.trialShipsPairInConflict.entrySet()) {
-            getSafeConflictShips(shipsPair, manouever, cpa);
+            if (shipsPair.getValue().cpaValue < cpa) {
+                getSafeConflictShips(shipsPair, manouever, cpa);
+            }
         }
     }
 
     private static void getSafeConflictShips(Map.Entry<Integer, ConflictShips> shipsPair,
-                                             String manouever, double cpa) {
+                                             String manouever, double cpa) throws CloneNotSupportedException {
         //determine which ship should give way
         ShipIntentions.performShipsPriority();
         ShipAis shipStandOn;
         ShipAis shipGiveWay;
         if (shipsPair.getValue().shipAGiveWay) {
-            shipGiveWay = shipsPair.getValue().shipA;
+            shipGiveWay = shipsPair.getValue().shipA.clone();
             shipStandOn = shipsPair.getValue().shipB;
         } else if (shipsPair.getValue().shipBGiveWay) {
-            shipGiveWay = shipsPair.getValue().shipB;
+            shipGiveWay = shipsPair.getValue().shipB.clone();
             shipStandOn = shipsPair.getValue().shipA;
         } else {
             return;
         }
-        int flag = 0;
+
         while (shipsPair.getValue().cpaValue < cpa) {
             ShipState shipStateA = new ShipState(shipStandOn.getMmsi(),
                     new Point2D.Double(shipStandOn.latitude, shipStandOn.longitude),
@@ -83,7 +86,7 @@ public class TrialManouever {
                 geoCalc.setStartingAzimuth(shipStateA.getHeading_current_deg());
             }
             geoCalc.setGeodesicDistance(speed_kn1 * 1.852 / 3.6 * Math.abs(cpaTime));
-            shipsPair.getValue().position1Future = geoCalc.getEndPoint();
+            DirectPosition position1F = geoCalc.getEndPoint();
 
             /** calc CPA-P2 **/
             geoCalc.setStartGeographicPoint(position2.getX(), position2.getY());
@@ -93,19 +96,28 @@ public class TrialManouever {
                 geoCalc.setStartingAzimuth(shipStateB.getHeading_current_deg());
             }
             geoCalc.setGeodesicDistance(speed_kn2 * 1.852 / 3.6 * Math.abs(cpaTime));
-            shipsPair.getValue().position2Future = geoCalc.getEndPoint();
+            DirectPosition position2F = geoCalc.getEndPoint();
 
             /** calc distance between CPA-P1 & CPA-P2 **/
-            geoCalc.setStartPoint(shipsPair.getValue().position1Future);
-            geoCalc.setEndPoint(shipsPair.getValue().position2Future);
+            geoCalc.setStartPoint(position1F);
+            geoCalc.setEndPoint(position2F);
             double cpaDistance = geoCalc.getGeodesicDistance();
             double startingAzimuth = geoCalc.getStartingAzimuth();
             shipsPair.getValue().cpaValue = cpaDistance / 1852;
-            geoCalc.setStartGeographicPoint(shipsPair.getValue().position1Future.getCoordinate()[0],
-                    shipsPair.getValue().position1Future.getCoordinate()[1]);
+            geoCalc.setStartGeographicPoint(position1F.getCoordinate()[0],
+                    position1F.getCoordinate()[1]);
             geoCalc.setStartingAzimuth(startingAzimuth);
             geoCalc.setGeodesicDistance(cpaDistance / 2);
             shipsPair.getValue().cpaLocation = geoCalc.getEndPoint();
+
+            if (shipsPair.getValue().shipAGiveWay) {
+                shipsPair.getValue().position2Future = position1F;
+                shipsPair.getValue().position1Future = position2F;
+            }
+            if (shipsPair.getValue().shipBGiveWay) {
+                shipsPair.getValue().position2Future = position2F;
+                shipsPair.getValue().position1Future = position1F;
+            }
 
             if (shipsPair.getValue().cpaValue > cpa) {
                 break;
@@ -121,12 +133,16 @@ public class TrialManouever {
                 shipGiveWay.hdg++;
                 shipGiveWay.speed -= 0.5;
             }
-            flag++;
-        }
-
-        if (flag > 2) {
             shipsPair.getValue().draw = true;
         }
+
+        if (shipsPair.getValue().shipAGiveWay) {
+            shipsPair.getValue().shipA = shipGiveWay;
+        }
+        if (shipsPair.getValue().shipBGiveWay) {
+            shipsPair.getValue().shipB = shipGiveWay;
+        }
+
         if (shipsPair.getValue().draw) {
             CrossAreaChartDraw.shipsManoeuvered.put(shipsPair.getValue().shipB.mmsiNum,
                     shipsPair.getValue().shipB);

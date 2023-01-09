@@ -726,9 +726,9 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         double xValue = 0;
         double yValue = 0;
         for (ConflictShips shipsPair : trialShipsPairInConflict.values()) {
-            if (shipsPair.cpaValue < cpa) {
+/*            if (shipsPair.cpaValue < cpa) {
                 continue;
-            }
+            }*/
             if (!shipsPair.draw) {
                 continue;
             }
