@@ -26,6 +26,19 @@ public class HighlighterUtil {
         return xyAnnotationList;
     }
 
+    public static List<XYAnnotation> highLightManoeuver() {
+        List<XYAnnotation> xyAnnotationList = new ArrayList<>();
+        for (Point2D.Double directPosition : CrossAreaChartDraw.maneouveredPositions) {
+            Ellipse2D.Double cpaLocationShapeEnd1
+                    = new Ellipse2D.Double(directPosition.getX() - 0.02, directPosition.getY() - 0.02, 0.04, 0.04);
+            BasicStroke basicStroke1
+                    = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 12.0f);
+            XYShapeAnnotation xyPairAnnotation = new XYShapeAnnotation(cpaLocationShapeEnd1, basicStroke1, Color.BLACK, Color.RED);
+            xyAnnotationList.add(xyPairAnnotation);
+        }
+        return xyAnnotationList;
+    }
+
     public static void madeTextAnnotationOfTcpaValue(double xValue, double yValue, double tcpaValue) {
         CrossAreaChartDraw.textAnnotation = new XYTextAnnotation(String.valueOf(Math.round(tcpaValue)),
                 xValue + 0.24, yValue + 0.02);

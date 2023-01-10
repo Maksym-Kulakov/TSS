@@ -38,6 +38,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,11 +56,17 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public XYPlot xyPlot;
     public static XYTextAnnotation textAnnotation;
     public static Set<Point2D.Double> directPositions;
+    public static List<Point2D.Double> maneouveredPositions;
+    public static List<Double> maneouveredParameters;
     public List<XYAnnotation> xyAnnotationList;
+    public List<XYAnnotation> xyAnnotationListManoeuver;
     public List<XYAnnotation> trialXyAnnotationList;
     int account = 0;
+    int accountManouever = 0;
+    int accountManoueverValues = 0;
     boolean safeCpaPushed = false;
-    public JTextField jTextFieldHdgManoeuver = new JTextField(null, "120", 3);
+    public JTextField jTextFieldHdgManoeuver = new JTextField(null, "", 5);
+    public JTextField jTextFieldSpdManoeuver = new JTextField(null, "", 3);
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -138,7 +145,27 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         controlNorth.add(new JButton(new AbstractAction("pair") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                jTextFieldHdgManoeuver.setText("123");
+                if (safeCpaPushed) {
+                    xyAnnotationListManoeuver = HighlighterUtil.highLightManoeuver();
+                    for (XYAnnotation xyAnnotation : xyAnnotationListManoeuver) {
+                        xyPlot.removeAnnotation(xyAnnotation);
+                    }
+                    xyPlot.addAnnotation(xyAnnotationListManoeuver.get(accountManouever));
+                    Double HDG = maneouveredParameters.get(accountManoueverValues);
+                    double HDGround = Math.round(HDG);
+                    Double SPD = maneouveredParameters.get(accountManoueverValues+1);
+                    double SPDrounded = Math.round(SPD * 10.0) / 10.0;
+                    jTextFieldHdgManoeuver.setText(String.valueOf(HDGround));
+                    jTextFieldSpdManoeuver.setText(String.valueOf(SPDrounded));
+                    accountManouever++;
+                    accountManoueverValues += 2;
+                    if (xyAnnotationListManoeuver.size() == accountManouever) {
+                        accountManouever = 0;
+                        accountManoueverValues = 0;
+                    }
+                    return;
+                }
+
                 xyAnnotationList = HighlighterUtil.highLightPair();
                 for (XYAnnotation xyAnnotationToRemove : xyAnnotationList) {
                     xyPlot.removeAnnotation(xyAnnotationToRemove);
@@ -181,10 +208,11 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
         controlSouth.add(jSpinnerShipAllowCpa, BorderLayout.SOUTH);
 
-        JTextArea jTextAreaShip = new JTextArea("Ship №:");
-        controlSouth.add(jTextAreaShip);
+        JTextArea jTextAreaSpace = new JTextArea("    ");
+        controlSouth.add(jTextAreaSpace);
 
-        controlSouth.add(jSpinnerShip, BorderLayout.SOUTH);
+        JTextArea jTextAreaShip = new JTextArea("Safe Manoeuver: ");
+        controlSouth.add(jTextAreaShip);
 
         JTextArea jTextAreaShipHdg = new JTextArea("HDG:");
         controlSouth.add(jTextAreaShipHdg);
@@ -197,7 +225,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         JTextArea jTextAreaShipSpeed = new JTextArea("SPD:");
         controlSouth.add(jTextAreaShipSpeed);
 
-        controlSouth.add(jSpinnerShipSpeed, BorderLayout.SOUTH);
+        controlSouth.add(jTextFieldSpdManoeuver, BorderLayout.SOUTH);
 
         JTextArea jTextAreaShipKn = new JTextArea("kn");
         controlSouth.add(jTextAreaShipKn);
@@ -722,6 +750,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
     //to DRAW trial paths of ships
     private void updateTrial(double cpa) {
+        maneouveredPositions = new LinkedList<>();
+        maneouveredParameters = new LinkedList<>();
         double xValue = 0;
         double yValue = 0;
         for (ConflictShips shipsPair : trialShipsPairInConflict.values()) {
@@ -743,6 +773,19 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             double[] xyCoordinatesLine2 = XYCoordinatesUtil.getXYCoordinates(shipsPair.position2Future);
             double xValueLine2 = xyCoordinatesLine2[0];
             double yValueLine2 = xyCoordinatesLine2[1];
+
+            if (shipsPair.shipAGiveWay) {
+                maneouveredPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
+                maneouveredParameters.add(shipsPair.shipA.hdg);
+                maneouveredParameters.add(shipsPair.shipA.speed);
+            }
+
+            if (shipsPair.shipBGiveWay) {
+                maneouveredPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
+                maneouveredParameters.add(shipsPair.shipB.hdg);
+                maneouveredParameters.add(shipsPair.shipB.speed);
+            }
+
 
             double[] xyCoordinatesEnds1
                     = XYCoordinatesUtil.getXYCoordinatesEnds(xValueLine1, yValueLine1, shipsPair.shipA, shipsPair.shipA.hdg);
