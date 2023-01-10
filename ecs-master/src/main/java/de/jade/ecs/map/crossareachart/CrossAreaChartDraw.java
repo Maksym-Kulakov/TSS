@@ -1,16 +1,14 @@
 package de.jade.ecs.map.crossareachart;
 
-import de.jade.ecs.map.ApplicationCPA;
 import de.jade.ecs.map.BoundaryArea;
 import de.jade.ecs.map.ConflictShips;
 import de.jade.ecs.map.CrossAreaChart;
 import de.jade.ecs.map.Intersection;
 import de.jade.ecs.map.Manoueveres;
 import de.jade.ecs.map.ShipAis;
-import de.jade.ecs.map.Track;
 import de.jade.ecs.map.geochart.AlterationsOfCourse;
+import de.jade.ecs.map.shipchart.PairHash;
 import org.apache.sis.geometry.DirectPosition2D;
-import org.apache.sis.referencing.GeodeticCalculator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -27,20 +25,18 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.opengis.geometry.DirectPosition;
-import org.scheduler.agent.state.ShipState;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
@@ -58,6 +54,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public static Set<Point2D.Double> directPositions;
     public static List<Point2D.Double> maneouveredPositions;
     public static List<Double> maneouveredParameters;
+    public static List<Double> maneouveredParametersCurrent;
     public List<XYAnnotation> xyAnnotationList;
     public List<XYAnnotation> xyAnnotationListManoeuver;
     public List<XYAnnotation> trialXyAnnotationList;
@@ -67,6 +64,8 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     boolean safeCpaPushed = false;
     public JTextField jTextFieldHdgManoeuver = new JTextField(null, "", 5);
     public JTextField jTextFieldSpdManoeuver = new JTextField(null, "", 3);
+    public JTextField jTextFieldHdgManoeuverCurrent = new JTextField(null, "", 5);
+    public JTextField jTextFieldSpdManoeuverCurrent = new JTextField(null, "", 3);
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -151,12 +150,25 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
                         xyPlot.removeAnnotation(xyAnnotation);
                     }
                     xyPlot.addAnnotation(xyAnnotationListManoeuver.get(accountManouever));
+                    //trial hdg to field
                     Double HDG = maneouveredParameters.get(accountManoueverValues);
                     double HDGround = Math.round(HDG);
+                    jTextFieldHdgManoeuver.setText(String.valueOf(HDGround));
+                    //trial spd to field
                     Double SPD = maneouveredParameters.get(accountManoueverValues+1);
                     double SPDrounded = Math.round(SPD * 10.0) / 10.0;
-                    jTextFieldHdgManoeuver.setText(String.valueOf(HDGround));
                     jTextFieldSpdManoeuver.setText(String.valueOf(SPDrounded));
+
+                    //current hdg to field
+                    Double HDGCurrent = maneouveredParametersCurrent.get(accountManoueverValues);
+                    double HDGroundCurrent = Math.round(HDGCurrent);
+                    jTextFieldHdgManoeuverCurrent.setText(String.valueOf(HDGroundCurrent));
+
+                    //current spd to field
+                    Double SPDCurrent = maneouveredParametersCurrent.get(accountManoueverValues+1);
+                    double SPDroundedCurrent = Math.round(SPDCurrent * 10.0) / 10.0;
+                    jTextFieldSpdManoeuverCurrent.setText(String.valueOf(SPDroundedCurrent));
+
                     accountManouever++;
                     accountManoueverValues += 2;
                     if (xyAnnotationListManoeuver.size() == accountManouever) {
@@ -208,9 +220,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
         controlSouth.add(jSpinnerShipAllowCpa, BorderLayout.SOUTH);
 
-        JTextArea jTextAreaSpace = new JTextArea("    ");
-        controlSouth.add(jTextAreaSpace);
-
         JTextArea jTextAreaShip = new JTextArea("Safe Manoeuver: ");
         controlSouth.add(jTextAreaShip);
 
@@ -229,6 +238,27 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
         JTextArea jTextAreaShipKn = new JTextArea("kn");
         controlSouth.add(jTextAreaShipKn);
+
+        this.add(controlSouth, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaSpace = new JTextArea("Current:");
+        controlSouth.add(jTextAreaSpace);
+
+        JTextArea jTextAreaShipHdgCurrent = new JTextArea("HDG:");
+        controlSouth.add(jTextAreaShipHdgCurrent);
+
+        controlSouth.add(jTextFieldHdgManoeuverCurrent, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShipDegrCurrent = new JTextArea("degr");
+        controlSouth.add(jTextAreaShipDegrCurrent);
+
+        JTextArea jTextAreaShipSpeedCurrent = new JTextArea("SPD:");
+        controlSouth.add(jTextAreaShipSpeedCurrent);
+
+        controlSouth.add(jTextFieldSpdManoeuverCurrent, BorderLayout.SOUTH);
+
+        JTextArea jTextAreaShipKnCurrent = new JTextArea("kn");
+        controlSouth.add(jTextAreaShipKnCurrent);
 
         this.add(controlSouth, BorderLayout.SOUTH);
     }
@@ -752,6 +782,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     private void updateTrial(double cpa) {
         maneouveredPositions = new LinkedList<>();
         maneouveredParameters = new LinkedList<>();
+        maneouveredParametersCurrent = new LinkedList<>();
         double xValue = 0;
         double yValue = 0;
         for (ConflictShips shipsPair : trialShipsPairInConflict.values()) {
@@ -774,16 +805,44 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
             double xValueLine2 = xyCoordinatesLine2[0];
             double yValueLine2 = xyCoordinatesLine2[1];
 
+            Integer key = new PairHash(shipsPair.shipA.getMmsi(), shipsPair.shipB.getMmsi()).hashCode();
+
             if (shipsPair.shipAGiveWay) {
                 maneouveredPositions.add(new Point2D.Double(xValueLine1, yValueLine1));
                 maneouveredParameters.add(shipsPair.shipA.hdg);
                 maneouveredParameters.add(shipsPair.shipA.speed);
+
+                ConflictShips conflictShips = shipsPairInConflict.get(key);
+                double hdg = 0;
+                double speed = 0;
+                if (Objects.equals(conflictShips.shipA.mmsiNum, shipsPair.shipA.mmsiNum)) {
+                    hdg = conflictShips.shipA.getHdg();
+                    speed = conflictShips.shipA.getSpeed();
+                } else {
+                    hdg = conflictShips.shipB.getHdg();
+                    speed = conflictShips.shipB.getSpeed();
+                }
+                maneouveredParametersCurrent.add(hdg);
+                maneouveredParametersCurrent.add(speed);
             }
 
             if (shipsPair.shipBGiveWay) {
                 maneouveredPositions.add(new Point2D.Double(xValueLine2, yValueLine2));
                 maneouveredParameters.add(shipsPair.shipB.hdg);
                 maneouveredParameters.add(shipsPair.shipB.speed);
+
+                ConflictShips conflictShips = shipsPairInConflict.get(key);
+                double hdg = 0;
+                double speed = 0;
+                if (Objects.equals(conflictShips.shipB.mmsiNum, shipsPair.shipB.mmsiNum)) {
+                    hdg = conflictShips.shipB.getHdg();
+                    speed = conflictShips.shipB.getSpeed();
+                } else {
+                    hdg = conflictShips.shipA.getHdg();
+                    speed = conflictShips.shipA.getSpeed();
+                }
+                maneouveredParametersCurrent.add(hdg);
+                maneouveredParametersCurrent.add(speed);
             }
 
 
