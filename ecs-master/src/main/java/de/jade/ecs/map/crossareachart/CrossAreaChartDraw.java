@@ -59,6 +59,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
     public List<XYAnnotation> trialXyAnnotationList;
     int account = 0;
     boolean safeCpaPushed = false;
+    public JTextField jTextFieldHdgManoeuver = new JTextField(null, "120", 3);
 
     public CrossAreaChartDraw(String s) {
         super(s);
@@ -76,9 +77,6 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
 
         SpinnerModel spinnerModelShip = new SpinnerNumberModel(1, 1, 3, 1);
         JSpinner jSpinnerShip = new JSpinner(spinnerModelShip);
-
-        SpinnerModel spinnerModelShipHdg = new SpinnerNumberModel(0, 0, 359, 1);
-        JSpinner jSpinnerShipHdg = new JSpinner(spinnerModelShipHdg);
 
         SpinnerModel spinnerModelShipSpeed = new SpinnerNumberModel(10, 0.1, 30, 1);
         JSpinner jSpinnerShipSpeed = new JSpinner(spinnerModelShipSpeed);
@@ -140,6 +138,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         controlNorth.add(new JButton(new AbstractAction("pair") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                jTextFieldHdgManoeuver.setText("123");
                 xyAnnotationList = HighlighterUtil.highLightPair();
                 for (XYAnnotation xyAnnotationToRemove : xyAnnotationList) {
                     xyPlot.removeAnnotation(xyAnnotationToRemove);
@@ -190,7 +189,7 @@ public class CrossAreaChartDraw extends ApplicationFrame implements Runnable {
         JTextArea jTextAreaShipHdg = new JTextArea("HDG:");
         controlSouth.add(jTextAreaShipHdg);
 
-        controlSouth.add(jSpinnerShipHdg, BorderLayout.SOUTH);
+        controlSouth.add(jTextFieldHdgManoeuver, BorderLayout.SOUTH);
 
         JTextArea jTextAreaShipDegr = new JTextArea("degr");
         controlSouth.add(jTextAreaShipDegr);
